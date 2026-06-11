@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hirostar T1 Pro - Dashboard de Consignación e Inversión</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0d0f12;
+            --panel-bg: rgba(22, 26, 33, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-primary: #00f2fe;
+            --accent-secondary: #4facfe;
+            --accent-accent: #ff007f;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            --success-color: #00e676;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(79, 172, 254, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 127, 0.04) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(13, 15, 18, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 3rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .badge-signature {
+            border: 1px solid var(--accent-accent);
+            color: var(--accent-accent);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(22, 26, 33, 0.8) 0%, rgba(13, 15, 18, 0.9) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100%;
+            background: radial-gradient(circle at 60% 30%, rgba(0, 242, 254, 0.1) 0%, transparent 70%);
+            z-index: 1;
+        }
+
+        .hero-text {
+            max-width: 60%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-subtitle {
+            color: var(--accent-primary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 3rem;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ffffff, #cbd5e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Editable Cost Table */
+        .cost-section {
+            margin-bottom: 2.5rem;
+        }
+        .cost-table-wrapper {
+            overflow-x: auto;
+        }
+        .cost-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        .cost-table th {
+            background: rgba(0,242,254,0.05);
+            color: var(--accent-primary);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(0,242,254,0.2);
+        }
+        .cost-table td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        .cost-table tr:last-child td { border-bottom: none; }
+        .cost-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .cost-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.4rem 0.7rem;
+            width: 130px;
+            text-align: right;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+        .cost-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 8px rgba(0,242,254,0.2);
+            background: rgba(0,242,254,0.04);
+        }
+        .cost-input:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .cost-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-left: 0.4rem;
+        }
+        .badge-fixed   { background: rgba(0,242,254,0.1);  color: var(--accent-primary); border: 1px solid rgba(0,242,254,0.2); }
+        .badge-var     { background: rgba(255,0,127,0.1);  color: #ff6b9d;              border: 1px solid rgba(255,0,127,0.2); }
+        .badge-editable{ background: rgba(255,193,7,0.1);  color: #ffc107;              border: 1px solid rgba(255,193,7,0.2); }
+        .cost-total-row td {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            border-top: 1px dashed rgba(0,242,254,0.3);
+            padding-top: 1rem;
+        }
+        .cost-total-row .cost-total-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 40%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .scenario-sync-bar {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .scenario-pill {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+        }
+        .scenario-pill span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 0.35rem;
+        }
+        .scenario-pill strong {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        .cost-table .calculated-cell {
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            text-align: right;
+            white-space: nowrap;
+        }
+        .cost-table .scenario-impact {
+            color: var(--accent-primary);
+        }
+        .cost-table .muted-cell {
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            line-height: 1.4;
+        }
+        .technical-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 2rem;
+        }
+        .technical-note {
+            margin-top: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            line-height: 1.55;
+        }
+        .add-row-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .add-row-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: rgba(0,242,254,0.03);
+        }
+        .del-btn {
+            background: none;
+            border: none;
+            color: rgba(255,0,127,0.5);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0 0.3rem;
+            transition: color 0.2s;
+        }
+        .del-btn:hover { color: #ff007f; }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.85rem 1.1rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
+        .toggle-row:hover {
+            border-color: rgba(0, 242, 254, 0.25);
+            background: rgba(0, 242, 254, 0.03);
+        }
+        .toggle-row.active {
+            border-color: rgba(0, 242, 254, 0.4);
+            background: rgba(0, 242, 254, 0.05);
+        }
+        .toggle-label-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .toggle-label-text strong {
+            color: var(--text-primary);
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.1rem;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 46px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 34px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .toggle-slider:before {
+            content: "";
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background: rgba(0, 242, 254, 0.35);
+        }
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+            background: var(--accent-primary);
+            box-shadow: 0 0 8px var(--accent-primary);
+        }
+        .breakdown-row.dimmed {
+            opacity: 0.3;
+            text-decoration: line-through;
+        }
+
+        .kpi-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.8rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 242, 254, 0.3);
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, var(--glass-shine) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .kpi-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+
+        .kpi-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+            background: linear-gradient(135deg, #ffffff 60%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .kpi-trend {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 600;
+        }
+
+        .kpi-trend.positive {
+            color: var(--success-color);
+        }
+
+        /* Simulator Area */
+        .simulator-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.8rem;
+        }
+
+        .card-title span {
+            color: var(--accent-primary);
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+        }
+
+        .control-label span.value-bubble {
+            color: var(--text-primary);
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.1rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent-primary);
+            transition: transform 0.1s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .radio-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-btn-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .radio-btn-card.active {
+            border-color: var(--accent-primary);
+            background: rgba(0, 242, 254, 0.05);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+        }
+
+        .radio-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .radio-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Financial Breakdown */
+        .financial-breakdown {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .breakdown-row.total {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-top: 1rem;
+            padding-top: 0.8rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .breakdown-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Charts panel */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            min-height: 380px;
+        }
+
+        .chart-box {
+            background: rgba(13, 15, 18, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .chart-header {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Tech Details & Sizing Section */
+        .details-section {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .tech-list {
+            margin-top: 1rem;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-icon {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--accent-primary);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            flex-shrink: 0;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .tech-content h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .tech-content p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Table custom styling */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge-size-peak {
+            background: rgba(0, 242, 254, 0.12);
+            color: var(--accent-primary);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 2.5rem 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            background: rgba(13, 15, 18, 0.5);
+        }
+
+        .footer-logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 1200px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .simulator-section, .details-section {
+                grid-template-columns: 1fr;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            header {
+                padding: 1.5rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .hero-title {
+                font-size: 2rem;
+            }
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="logo-area">
+            <span class="brand-logo">Hirostar</span>
+            <span class="badge-signature">T1 Pro</span>
+            <span style="font-size: 0.85rem; color: var(--text-secondary)">By Tolito</span>
+        </div>
+        <div class="nav-links">
+            <a href="#simulator" class="nav-link active">Simulador de ROI</a>
+            <a href="#tech" class="nav-link">Especificaciones</a>
+            <a href="#sizing" class="nav-link">Distribución de Tallas</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Hero Banner -->
+        <div class="hero-banner">
+            <div class="hero-text">
+                <p class="hero-subtitle">Estrategia de Producción 100% Exclusiva — Moldes Propios</p>
+                <h1 class="hero-title">Simulador de Inversión & Retorno Hirostar T1 Pro</h1>
+                <p class="hero-desc">Simulador comercial de alta precisión para el modelo de negocio de Hirostar: zapatillas de pádel de alto rendimiento fabricadas con moldes 100% propios en China. Proyecta tu retorno bajo dos escenarios de venta: canal directo (DTC + Consignación en Clubes) o canal distribuidor.</p>
+            </div>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <p class="kpi-label">Inversión Requerida</p>
+                <h3 class="kpi-value" id="kpi-investment">$56,600</h3>
+                <p class="kpi-trend positive" id="kpi-investment-sub">Landed Cost Inicial</p>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Costo por Par (Landed)</p>
+                <h3 class="kpi-value" id="kpi-unit-cost">$56.60</h3>
+                <p class="kpi-trend" id="kpi-unit-cost-sub">Todo incluido puesto en bodega</p>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Retorno Neto Proyectado</p>
+                <h3 class="kpi-value" id="kpi-profit">$44,000</h3>
+                <p class="kpi-trend positive" id="kpi-profit-sub">Ganancia en canales activos</p>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Retorno de Inversión (ROI)</p>
+                <h3 class="kpi-value" id="kpi-roi" style="background: linear-gradient(135deg, var(--success-color) 0%, var(--accent-primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">77.7%</h3>
+                <p class="kpi-trend positive" id="kpi-roi-sub">Equivale a $44,000 de retorno neto</p>
+            </div>
+            <div class="kpi-card" style="border-color: rgba(255, 0, 127, 0.2); background: rgba(255,0,127,0.03);">
+                <p class="kpi-label" style="color: rgba(255,0,127,0.8);">Punto de Equilibrio</p>
+                <h3 class="kpi-value" id="kpi-breakeven" style="background: linear-gradient(135deg, #ff007f 0%, #ff6b9d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">563</h3>
+                <p class="kpi-trend" id="kpi-breakeven-sub" style="color: rgba(255,0,127,0.7);">Pares para recuperar inversión</p>
+            </div>
+        </div>
+
+        <!-- Simulator & Charts Row -->
+        <div class="simulator-section" id="simulator">
+            
+            <!-- Controls panel (Left) -->
+            <div class="card">
+                <h3 class="card-title">Configuración del Pedido <span style="font-size:0.75rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;">— Moldes 100% Exclusivos</span></h3>
+
+                <!-- Quantity Slider -->
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Cantidad a Fabricar (Pares)</span>
+                        <span class="value-bubble" id="val-qty">1,000</span>
+                    </div>
+                    <input type="range" id="range-qty" min="1000" max="4000" step="500" value="1000" oninput="calculate()">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">
+                        <span>1,000 (Mínimo)</span>
+                        <span>3,000 (Contenedor 20ft)</span>
+                        <span>4,000 (Máximo)</span>
+                    </div>
+                </div>
+
+                <!-- Price Slider -->
+                <div class="control-group">
+                    <div class="control-label">
+                        <span id="pvp-label">Precio de Venta al Público (PVP)</span>
+                        <span class="value-bubble" id="val-pvp">$130</span>
+                    </div>
+                    <input type="range" id="range-pvp" min="100" max="180" step="10" value="130" oninput="calculate()">
+                </div>
+
+                <!-- Sales Mix Toggle -->
+                <label class="toggle-row" id="salesmix-toggle-row" onclick="toggleSalesMix()">
+                    <div class="toggle-label-text">
+                        <strong>Mix de Ventas — Canal Directo</strong>
+                        <span id="salesmix-desc">DTC Online + Consignación en Clubes</span>
+                    </div>
+                    <div class="toggle-switch" onclick="event.stopPropagation()">
+                        <input type="checkbox" id="toggle-salesmix" onchange="toggleSalesMix()">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
+
+                <!-- Channel Split Slider (only visible when sales mix is ON) -->
+                <div class="control-group" id="group-split" style="opacity:0.3; pointer-events:none;">
+                    <div class="control-label">
+                        <span>% Venta Directa (E-Commerce DTC)</span>
+                        <span class="value-bubble" id="val-split">40%</span>
+                    </div>
+                    <input type="range" id="range-split" min="10" max="90" step="10" value="40" oninput="calculate()">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">
+                        <span>← Más Consignación Clubs</span>
+                        <span>Más E-Commerce →</span>
+                    </div>
+                </div>
+
+                <!-- Consignment Commission Slider (only active when sales mix is ON) -->
+                <div class="control-group" id="group-comm" style="opacity:0.3; pointer-events:none;">
+                    <div class="control-label">
+                        <span>Comisión del Club de Pádel</span>
+                        <span class="value-bubble" id="val-comm">30%</span>
+                    </div>
+                    <input type="range" id="range-comm" min="15" max="45" step="5" value="30" oninput="calculate()">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">
+                        <span>Menos Margen Club</span>
+                        <span>Más Margen Club</span>
+                    </div>
+                </div>
+
+                <!-- Logistics Toggle -->
+                <label class="toggle-row" id="logistics-toggle-row" onclick="toggleLogistics()">
+                    <div class="toggle-label-text">
+                        <strong>Costos Logísticos</strong>
+                        Flete + Aranceles de Importación
+                    </div>
+                    <div class="toggle-switch" onclick="event.stopPropagation()">
+                        <input type="checkbox" id="toggle-logistics" onchange="toggleLogistics()">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
+
+                <!-- Detailed Costs Rows -->
+                <div class="financial-breakdown">
+                    <div class="breakdown-row">
+                        <span>Costo Unitario de Fábrica (FOB):</span>
+                        <span class="breakdown-value" id="breakdown-fob">$34.00</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>Amortización de Moldes por Par:</span>
+                        <span class="breakdown-value" id="breakdown-mold">$9.00</span>
+                    </div>
+                    <div class="breakdown-row" id="row-shipping">
+                        <span>Logística y Flete por Par:</span>
+                        <span class="breakdown-value" id="breakdown-shipping">$3.50</span>
+                    </div>
+                    <div class="breakdown-row" id="row-tariffs">
+                        <span>Aranceles e Importación (Est.):</span>
+                        <span class="breakdown-value" id="breakdown-tariffs">$10.10</span>
+                    </div>
+                    <div class="breakdown-row total">
+                        <span>Landed Cost Total Unitario:</span>
+                        <span class="breakdown-value" id="breakdown-landed">$56.60</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Panel (Right) -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <h3 class="card-title">Rendimiento Financiero y Proyección</h3>
+                <div class="charts-container">
+                    <!-- Cost Breakdown chart -->
+                    <div class="chart-box">
+                        <p class="chart-header">Análisis de Retorno Financiero</p>
+                        <div style="position: relative; height: 260px; width: 100%;">
+                            <canvas id="chart-revenue"></canvas>
+                        </div>
+                    </div>
+                    <!-- Cost Reduction curve chart -->
+                    <div class="chart-box">
+                        <p class="chart-header">Curva de Optimización de Costos (Landed Cost)</p>
+                        <div style="position: relative; height: 260px; width: 100%;">
+                            <canvas id="chart-costs"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div id="chart-note" style="margin-top: 1.5rem; background: rgba(0, 242, 254, 0.03); border: 1px solid rgba(0, 242, 254, 0.1); border-radius: 12px; padding: 1rem;">
+                    <p style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);" id="chart-note-text">
+                        <strong style="color: var(--accent-primary);">Canal Directo activo:</strong> La mezcla DTC + Consignación retiene entre el 70–100% del PVP en ingresos netos. El margen de consignación (PVP menos comisión del club) siempre supera al precio de distribuidor, compensando el costo de mantener inventario en pista.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- ESTRUCTURA DE COSTOS FIJOS — EDITABLE               -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="cost-section" id="costos">
+            <div class="card">
+                <h3 class="card-title">
+                    Tabla Tecnica del Escenario
+                    <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;">Refleja la tabla interactiva y permite editar los supuestos de costo</span>
+                </h3>
+
+                <div class="scenario-sync-bar">
+                    <div class="scenario-pill"><span>Pares configurados</span><strong id="scenario-qty">1,000</strong></div>
+                    <div class="scenario-pill"><span>Canal comercial</span><strong id="scenario-channel">Directo</strong></div>
+                    <div class="scenario-pill"><span>Ingreso neto / par</span><strong id="scenario-revenue-pair">$100.60</strong></div>
+                    <div class="scenario-pill"><span>Logistica</span><strong id="scenario-logistics">Incluida</strong></div>
+                    <div class="scenario-pill"><span>Costo landed / par</span><strong id="scenario-landed-unit">$56.60</strong></div>
+                </div>
+
+                <div class="technical-grid">
+                    <div>
+                        <p style="font-size:0.78rem; color:var(--accent-primary); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.8rem;">Inversion fija y moldes - amortizada sobre el lote</p>
+                        <div class="cost-table-wrapper">
+                            <table class="cost-table" id="fixed-cost-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:38%">Concepto tecnico</th>
+                                        <th style="width:22%">Total editable</th>
+                                        <th style="width:20%">Impacto / par</th>
+                                        <th style="width:20%">Total lote</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fixed-cost-body">
+                                    <tr data-id="design">
+                                        <td>Diseno tecnico + tech pack <span class="cost-badge badge-editable">fijo</span></td>
+                                        <td><input type="number" class="cost-input fixed-cost-input" value="3000" min="0" step="100" oninput="recalcFixedTotal()"></td>
+                                        <td class="calculated-cell fixed-unit-impact">$3.00/par</td>
+                                        <td class="calculated-cell fixed-total-impact">$3,000</td>
+                                    </tr>
+                                    <tr data-id="last">
+                                        <td>Horma propia HP-02 <span class="cost-badge badge-editable">fijo</span></td>
+                                        <td><input type="number" class="cost-input fixed-cost-input" value="3500" min="0" step="100" oninput="recalcFixedTotal()"></td>
+                                        <td class="calculated-cell fixed-unit-impact">$3.50/par</td>
+                                        <td class="calculated-cell fixed-total-impact">$3,500</td>
+                                    </tr>
+                                    <tr data-id="outsole-mold">
+                                        <td>Molde suela caucho - 6 tallas <span class="cost-badge badge-editable">molde</span></td>
+                                        <td><input type="number" class="cost-input fixed-cost-input" value="9000" min="0" step="100" oninput="recalcFixedTotal()"></td>
+                                        <td class="calculated-cell fixed-unit-impact">$9.00/par</td>
+                                        <td class="calculated-cell fixed-total-impact">$9,000</td>
+                                    </tr>
+                                    <tr data-id="midsole-mold">
+                                        <td>Molde media suela EVA/Phylon <span class="cost-badge badge-editable">molde</span></td>
+                                        <td><input type="number" class="cost-input fixed-cost-input" value="12000" min="0" step="100" oninput="recalcFixedTotal()"></td>
+                                        <td class="calculated-cell fixed-unit-impact">$12.00/par</td>
+                                        <td class="calculated-cell fixed-total-impact">$12,000</td>
+                                    </tr>
+                                    <tr data-id="lockframe-mold">
+                                        <td>Molde talonera TPU Lock Frame <span class="cost-badge badge-editable">molde</span></td>
+                                        <td><input type="number" class="cost-input fixed-cost-input" value="7200" min="0" step="100" oninput="recalcFixedTotal()"></td>
+                                        <td class="calculated-cell fixed-unit-impact">$7.20/par</td>
+                                        <td class="calculated-cell fixed-total-impact">$7,200</td>
+                                    </tr>
+                                    <tr data-id="shank-mold">
+                                        <td>Molde estabilizador TPU Rotation System <span class="cost-badge badge-editable">molde</span></td>
+                                        <td><input type="number" class="cost-input fixed-cost-input" value="6000" min="0" step="100" oninput="recalcFixedTotal()"></td>
+                                        <td class="calculated-cell fixed-unit-impact">$6.00/par</td>
+                                        <td class="calculated-cell fixed-total-impact">$6,000</td>
+                                    </tr>
+                                    <tr data-id="sample">
+                                        <td>Prototipo / salesman sample <span class="cost-badge badge-editable">fijo</span></td>
+                                        <td><input type="number" class="cost-input fixed-cost-input" value="0" min="0" step="100" oninput="recalcFixedTotal()"></td>
+                                        <td class="calculated-cell fixed-unit-impact">$0.00/par</td>
+                                        <td class="calculated-cell fixed-total-impact">$0</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="cost-total-row">
+                                        <td>Total inversion fija</td>
+                                        <td><span class="cost-total-val" id="fixed-cost-total">$40,700</span></td>
+                                        <td class="calculated-cell scenario-impact" id="scenario-fixed-per-pair">$40.70/par</td>
+                                        <td class="calculated-cell scenario-impact" id="scenario-fixed-total">$40,700</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p style="font-size:0.78rem; color:rgba(255,0,127,0.8); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.8rem;">Costo unitario, produccion y logistica</p>
+                        <div class="cost-table-wrapper">
+                            <table class="cost-table" id="var-cost-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:42%">Item por par</th>
+                                        <th style="width:24%">Base editable</th>
+                                        <th style="width:18%">Escenario</th>
+                                        <th style="width:16%">Total lote</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="var-cost-body">
+                                    <tr data-id="upper"><td>Upper knit + termosellados <span class="cost-badge badge-var">unitario</span></td><td><input type="number" class="cost-input var-cost-input" value="13.00" min="0" step="0.25" oninput="recalcVarTotal()"></td><td class="calculated-cell var-adjusted-impact">$13.00/par</td><td class="calculated-cell var-total-impact">$13,000</td></tr>
+                                    <tr data-id="tpu"><td>Plasticos tecnicos TPU <span class="cost-badge badge-var">unitario</span></td><td><input type="number" class="cost-input var-cost-input" value="4.50" min="0" step="0.25" oninput="recalcVarTotal()"></td><td class="calculated-cell var-adjusted-impact">$4.50/par</td><td class="calculated-cell var-total-impact">$4,500</td></tr>
+                                    <tr data-id="sole"><td>Suela + amortiguacion <span class="cost-badge badge-var">unitario</span></td><td><input type="number" class="cost-input var-cost-input" value="8.00" min="0" step="0.25" oninput="recalcVarTotal()"></td><td class="calculated-cell var-adjusted-impact">$8.00/par</td><td class="calculated-cell var-total-impact">$8,000</td></tr>
+                                    <tr data-id="assembly"><td>Ensamble y pegado <span class="cost-badge badge-var">unitario</span></td><td><input type="number" class="cost-input var-cost-input" value="7.00" min="0" step="0.25" oninput="recalcVarTotal()"></td><td class="calculated-cell var-adjusted-impact">$7.00/par</td><td class="calculated-cell var-total-impact">$7,000</td></tr>
+                                    <tr data-id="package"><td>Plantilla + empaque premium <span class="cost-badge badge-var">unitario</span></td><td><input type="number" class="cost-input var-cost-input" value="3.50" min="0" step="0.25" oninput="recalcVarTotal()"></td><td class="calculated-cell var-adjusted-impact">$3.50/par</td><td class="calculated-cell var-total-impact">$3,500</td></tr>
+                                    <tr data-id="qc"><td>Control de calidad QC <span class="cost-badge badge-var">unitario</span></td><td><input type="number" class="cost-input var-cost-input" value="2.00" min="0" step="0.25" oninput="recalcVarTotal()"></td><td class="calculated-cell var-adjusted-impact">$2.00/par</td><td class="calculated-cell var-total-impact">$2,000</td></tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="cost-total-row">
+                                        <td>FOB base / par</td>
+                                        <td><span class="cost-total-val" id="var-cost-total">$38.00</span></td>
+                                        <td class="calculated-cell scenario-impact" id="scenario-var-adjusted">$38.00/par</td>
+                                        <td class="calculated-cell scenario-impact" id="scenario-var-total">$38,000</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div class="cost-table-wrapper" style="margin-top:1.2rem;">
+                            <table class="cost-table">
+                                <thead>
+                                    <tr><th>Logistica del escenario</th><th>Editable</th><th>Impacto / par</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="row-shipping-tech"><td>Flete e inlands por par</td><td><input type="number" class="cost-input" id="tech-shipping" value="3.50" min="0" step="0.1" oninput="manualShippingOverride = true; calculate()"></td><td class="calculated-cell" id="scenario-shipping">$3.50/par</td></tr>
+                                    <tr id="row-import-tech"><td>Aranceles + nacionalizacion (% FOB)</td><td><input type="number" class="cost-input" id="tech-import-rate" value="40" min="0" step="1" oninput="calculate()"></td><td class="calculated-cell" id="scenario-import">$11.70/par</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="technical-note">
+                            El descuento por volumen de la tabla interactiva se aplica sobre cada item unitario. Los moldes y desarrollo se ven como inversion fija, pero tambien se traducen a costo por par segun el lote seleccionado.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cost-section" id="costos-old" style="display:none;">
+            <div class="card">
+                <h3 class="card-title">
+                    Estructura de Costos de Desarrollo
+                    <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;">Edita los valores — el simulador se actualiza automáticamente</span>
+                </h3>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+                    <!-- COSTOS FIJOS (Inversión única) -->
+                    <div>
+                        <p style="font-size:0.78rem; color:var(--accent-primary); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.8rem;">Costos Fijos — Inversión Inicial Única</p>
+                        <div class="cost-table-wrapper">
+                            <table class="cost-table" id="fixed-cost-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:55%">Concepto</th>
+                                        <th style="width:30%">Valor (USD)</th>
+                                        <th style="width:15%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fixed-cost-body">
+                                    <tr data-id="disenio">
+                                        <td>
+                                            Diseño del Calzado
+                                            <span class="cost-badge badge-editable">editable</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="cost-input fixed-cost-input" id="cost-disenio"
+                                                value="3000" min="0" step="100" oninput="recalcFixedTotal()">
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr data-id="horma">
+                                        <td>
+                                            Horma Propia (HP-02)
+                                            <span class="cost-badge badge-editable">editable</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="cost-input fixed-cost-input" id="cost-horma"
+                                                value="3500" min="0" step="100" oninput="recalcFixedTotal()">
+                                        </td>
+                                        <td><button class="del-btn" onclick="deleteFixedRow(this)" title="Eliminar fila">✕</button></td>
+                                    </tr>
+                                    <tr data-id="moldes-suela">
+                                        <td>
+                                            Moldes Tecnicos 100% Exclusivos (6 tallas)
+                                            <span class="cost-badge badge-editable">editable</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="cost-input fixed-cost-input" id="cost-moldes-suela"
+                                                value="34200" min="0" step="100" oninput="recalcFixedTotal()">
+                                        </td>
+                                        <td><button class="del-btn" onclick="deleteFixedRow(this)" title="Eliminar fila">✕</button></td>
+                                    </tr>
+                                    <tr data-id="moldes-lockframe">
+                                        <td>
+                                            Prototipo / Salesman Sample
+                                            <span class="cost-badge badge-editable">editable</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="cost-input fixed-cost-input" id="cost-moldes-lockframe"
+                                                value="0" min="0" step="100" oninput="recalcFixedTotal()">
+                                        </td>
+                                        <td><button class="del-btn" onclick="deleteFixedRow(this)" title="Eliminar fila">✕</button></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="cost-total-row">
+                                        <td>Total Inversión Fija</td>
+                                        <td colspan="2"><span class="cost-total-val" id="fixed-cost-total">$48,700</span></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <button class="add-row-btn" onclick="addFixedRow()">＋ Agregar concepto fijo</button>
+                    </div>
+
+                    <!-- COSTOS VARIABLES (por par) -->
+                    <div>
+                        <p style="font-size:0.78rem; color:rgba(255,0,127,0.8); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.8rem;">Costos Variables — Por Par Producido</p>
+                        <div class="cost-table-wrapper">
+                            <table class="cost-table" id="var-cost-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:55%">Concepto</th>
+                                        <th style="width:30%">Costo/Par (USD)</th>
+                                        <th style="width:15%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="var-cost-body">
+                                    <tr data-id="fob">
+                                        <td>
+                                            FOB Fábrica (materiales + MO)
+                                            <span class="cost-badge badge-var">variable</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="cost-input var-cost-input" id="vcost-fob"
+                                                value="32.50" min="0" step="0.5" oninput="recalcVarTotal()">
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr data-id="empaque">
+                                        <td>
+                                            Empaque + Caja Premium
+                                            <span class="cost-badge badge-var">variable</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="cost-input var-cost-input" id="vcost-empaque"
+                                                value="3.50" min="0" step="0.5" oninput="recalcVarTotal()">
+                                        </td>
+                                        <td><button class="del-btn" onclick="deleteVarRow(this)" title="Eliminar fila">✕</button></td>
+                                    </tr>
+                                    <tr data-id="qc">
+                                        <td>
+                                            Control de Calidad (QC)
+                                            <span class="cost-badge badge-var">variable</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="cost-input var-cost-input" id="vcost-qc"
+                                                value="2.00" min="0" step="0.5" oninput="recalcVarTotal()">
+                                        </td>
+                                        <td><button class="del-btn" onclick="deleteVarRow(this)" title="Eliminar fila">✕</button></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="cost-total-row">
+                                        <td>Costo Variable Total / Par</td>
+                                        <td colspan="2"><span class="cost-total-val" id="var-cost-total">$38.00</span></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <button class="add-row-btn" onclick="addVarRow()">＋ Agregar concepto variable</button>
+
+                        <!-- Impact indicator -->
+                        <div style="margin-top:1.2rem; background:rgba(255,0,127,0.04); border:1px solid rgba(255,0,127,0.15); border-radius:12px; padding:1rem;">
+                            <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px;">Impacto en el Simulador</p>
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.4rem;">
+                                <span style="color:var(--text-secondary)">Inv. Fija Amortizada (1,000 pares):</span>
+                                <span id="impact-amort" style="color:var(--text-primary); font-weight:700;">$48.70/par</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+                                <span style="color:var(--text-secondary)">Costo Total Est. / Par (1,000 pares):</span>
+                                <span id="impact-total-unit" style="color:var(--accent-primary); font-weight:700;">$86.70/par</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Specs & Sizing Row -->
+        <div class="details-section">
+            
+            <!-- Tech Specs Card -->
+            <div class="card" id="tech">
+                <h3 class="card-title">Especificaciones del T1 Pro "White Phantom"</h3>
+                <div class="tech-list">
+                    <div class="tech-item">
+                        <div class="tech-icon">LF</div>
+                        <div class="tech-content">
+                            <h4>Hirostar Lock Frame</h4>
+                            <p>Talonera rígida externa de TPU inyectado metálico. Proporciona sujeción lateral extrema, previniendo lesiones por torsión lateral en el talón.</p>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">RS</div>
+                        <div class="tech-content">
+                            <h4>Hirostar Rotation System</h4>
+                            <p>Suela de caucho bicolor con patrón de espiga de alta abrasión, con dos puntos de pívot en el metatarso y talón para permitir rotaciones rápidas sin dañar las rodillas.</p>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">AC</div>
+                        <div class="tech-content">
+                            <h4>Aircore Midsole Chasis</h4>
+                            <p>Chasis de amortiguación en Phylon/EVA de doble densidad con una ventana visible lateral para maximizar la absorción de impactos.</p>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">UK</div>
+                        <div class="tech-content">
+                            <h4>Engineered Tech Knit Upper</h4>
+                            <p>Tejido premium ultra-transpirable reforzado con películas termoselladas de KPU/TPU en el exterior para resistir la abrasión en arrastres.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sizing Chart Card -->
+            <div class="card" id="sizing">
+                <h3 class="card-title">Distribución y Equivalencias de Tallas</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.4;">
+                    Para producción, la fábrica utiliza horma europea (EU). Los picos de demanda difieren debido a las fisonomías regionales (Europa demanda tallas más grandes).
+                </p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Orden Fábrica (EU)</th>
+                                <th>España / Italia</th>
+                                <th>Argentina</th>
+                                <th>Col / Ecu</th>
+                                <th>Distribución LATAM (500 prs)</th>
+                                <th>Distribución Europa (500 prs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>38</td>
+                                <td>38</td>
+                                <td>37</td>
+                                <td>36</td>
+                                <td>20 pares (4%)</td>
+                                <td>10 pares (2%)</td>
+                            </tr>
+                            <tr>
+                                <td>39</td>
+                                <td>39</td>
+                                <td>38</td>
+                                <td>37</td>
+                                <td>40 pares (8%)</td>
+                                <td>20 pares (4%)</td>
+                            </tr>
+                            <tr>
+                                <td>40</td>
+                                <td>40</td>
+                                <td>39</td>
+                                <td>38</td>
+                                <td>90 pares (18%)</td>
+                                <td>50 pares (10%)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge-size-peak">41</span></td>
+                                <td>41</td>
+                                <td>40</td>
+                                <td>39</td>
+                                <td><strong style="color: var(--accent-primary)">130 pares (26%)</strong></td>
+                                <td>80 pares (16%)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge-size-peak">42</span></td>
+                                <td>42</td>
+                                <td>41</td>
+                                <td>40</td>
+                                <td>110 pares (22%)</td>
+                                <td><strong style="color: var(--accent-primary)">120 pares (24%)</strong></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge-size-peak">43</span></td>
+                                <td>43</td>
+                                <td>42</td>
+                                <td>41</td>
+                                <td>70 pares (14%)</td>
+                                <td><strong style="color: var(--accent-primary)">120 pares (24%)</strong></td>
+                            </tr>
+                            <tr>
+                                <td>44</td>
+                                <td>44</td>
+                                <td>43</td>
+                                <td>42</td>
+                                <td>30 pares (6%)</td>
+                                <td>60 pares (12%)</td>
+                            </tr>
+                            <tr>
+                                <td>45</td>
+                                <td>45</td>
+                                <td>44</td>
+                                <td>43</td>
+                                <td>10 pares (2%)</td>
+                                <td>30 pares (6%)</td>
+                            </tr>
+                            <tr>
+                                <td>46</td>
+                                <td>46</td>
+                                <td>45</td>
+                                <td>44</td>
+                                <td>0 pares (0%)</td>
+                                <td>10 pares (2%)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">HIROSTAR FOOTWEAR</div>
+        <p style="font-size: 0.75rem; margin-bottom: 0.5rem;">Proyección técnica y comercial - Maquila en China para Latam y Europa.</p>
+        <p style="font-size: 0.7rem; color: rgba(255,255,255,0.25);">© 2026 Hirostar Padel. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Interactive Logic & Chart.js Initialization -->
+    <script>
+        let revenueChartObj = null;
+        let costsChartObj = null;
+        let logisticsEnabled = false;
+        let salesMixEnabled = false;  // true = DTC+Clubs, false = Distribuidor
+        let manualShippingOverride = false;
+
+        // Data for Simulator logic (100% Exclusive molds only)
+        const volumeLevels = [1000, 1500, 2000, 2500, 3000, 3500, 4000];
+        
+        // FOB prices — 100% exclusive molds
+        const fobDiscountFactors = [1.00, 0.96, 0.92, 0.86, 0.81, 0.79, 0.78];
+
+        // Shipping rates (per pair reduces as LCL converts to FCL at 3000 pairs)
+        const shippingSeries = [3.50, 3.00, 2.50, 2.00, 1.67, 1.50, 1.40];
+        const importRateSeries = [0.40, 0.38, 0.36, 0.34, 0.31, 0.30, 0.29];
+
+        // Tooling cost — always 100% exclusive
+        function toggleSalesMix() {
+            const cb = document.getElementById('toggle-salesmix');
+            if (document.activeElement !== cb) cb.checked = !cb.checked;
+            salesMixEnabled = cb.checked;
+
+            const row = document.getElementById('salesmix-toggle-row');
+            const groupSplit = document.getElementById('group-split');
+            const groupComm = document.getElementById('group-comm');
+            const pvpLabel = document.getElementById('pvp-label');
+            const chartNote = document.getElementById('chart-note-text');
+
+            if (salesMixEnabled) {
+                row.classList.add('active');
+                groupSplit.style.opacity = '1';
+                groupSplit.style.pointerEvents = 'auto';
+                groupComm.style.opacity = '1';
+                groupComm.style.pointerEvents = 'auto';
+                document.getElementById('salesmix-desc').innerText = 'DTC Online + Consignación en Clubes';
+                pvpLabel.innerText = 'Precio de Venta al Público (PVP)';
+                row.querySelector('strong').innerText = 'Mix de Ventas — Canal Directo';
+                chartNote.innerHTML = '<strong style="color: var(--accent-primary);">Canal Directo activo:</strong> La mezcla DTC + Consignación retiene entre el 70–100% del PVP en ingresos netos. El margen de consignación siempre supera al precio de distribuidor, compensando el costo de mantener inventario en pista.';
+            } else {
+                row.classList.remove('active');
+                groupSplit.style.opacity = '0.3';
+                groupSplit.style.pointerEvents = 'none';
+                groupComm.style.opacity = '0.3';
+                groupComm.style.pointerEvents = 'none';
+                document.getElementById('salesmix-desc').innerText = 'Precio directo a distribuidores (mayorista)';
+                pvpLabel.innerText = 'Precio de Venta a Distribuidor (Mayorista)';
+                row.querySelector('strong').innerText = 'Mix de Ventas — Canal Distribuidor';
+                chartNote.innerHTML = '<strong style="color: rgba(255,0,127,0.9);">Canal Distribuidor activo:</strong> El precio configurado es tu precio de venta al distribuidor. Ellos aplicarán su margen (típicamente 40–60%) para llegar al precio final al público. La comisión del club no aplica en este escenario.';
+            }
+            calculate();
+        }
+
+        function toggleLogistics() {
+            const cb = document.getElementById('toggle-logistics');
+            if (document.activeElement !== cb) {
+                cb.checked = !cb.checked;
+            }
+            logisticsEnabled = cb.checked;
+
+            const row = document.getElementById('logistics-toggle-row');
+            const rowShipping = document.getElementById('row-shipping');
+            const rowTariffs = document.getElementById('row-tariffs');
+
+            if (logisticsEnabled) {
+                row.classList.add('active');
+                rowShipping.classList.remove('dimmed');
+                rowTariffs.classList.remove('dimmed');
+            } else {
+                row.classList.remove('active');
+                rowShipping.classList.add('dimmed');
+                rowTariffs.classList.add('dimmed');
+            }
+            calculate();
+        }
+
+        function formatCurrency(num) {
+            return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function calculate() {
+            const qty = parseInt(document.getElementById('range-qty').value);
+            const pvp = parseInt(document.getElementById('range-pvp').value);
+            const splitDTC = parseInt(document.getElementById('range-split').value) / 100.0;
+            const splitConsig = 1.0 - splitDTC;
+            const clubCommission = parseInt(document.getElementById('range-comm').value) / 100.0;
+
+            const volIndex = volumeLevels.indexOf(qty);
+
+            const baseFob = getVarTotal();
+            const fixedCostTotal = getFixedTotal();
+            const fob = baseFob * fobDiscountFactors[volIndex];
+            const moldPerPair = fixedCostTotal / qty;
+            const shippingInput = document.getElementById('tech-shipping');
+            if (shippingInput && !manualShippingOverride) {
+                shippingInput.value = shippingSeries[volIndex].toFixed(2);
+            }
+            const shipping = shippingInput ? (parseFloat(shippingInput.value) || 0) : shippingSeries[volIndex];
+            const importRateInput = document.getElementById('tech-import-rate');
+            const importRate = importRateInput ? ((parseFloat(importRateInput.value) || 0) / 100) : importRateSeries[volIndex];
+            
+            const importAndFreight = fob * importRate;
+            const tariffs = Math.max(importAndFreight - shipping, 0);
+
+            const activeShipping = logisticsEnabled ? shipping : 0;
+            const activeTariffs = logisticsEnabled ? tariffs : 0;
+
+            const landedCost = fob + moldPerPair + activeShipping + activeTariffs;
+            const totalInvestment = landedCost * qty;
+
+            let blendedRevenuePerPair;
+            if (salesMixEnabled) {
+                const retailNetPrice = pvp - 15;
+                const consigNetPrice = pvp * (1.0 - clubCommission);
+                blendedRevenuePerPair = (splitDTC * retailNetPrice) + (splitConsig * consigNetPrice);
+            } else {
+                blendedRevenuePerPair = pvp;
+            }
+
+            const totalRevenue = blendedRevenuePerPair * qty;
+            const netProfit = totalRevenue - totalInvestment;
+            const roi = (netProfit / totalInvestment) * 100.0;
+
+            const breakEvenPairs = Math.ceil(totalInvestment / blendedRevenuePerPair);
+            const breakEvenPct = Math.min((breakEvenPairs / qty) * 100, 100).toFixed(0);
+
+            document.getElementById('val-qty').innerText = qty.toLocaleString('en-US');
+            document.getElementById('val-pvp').innerText = '$' + pvp;
+            if (salesMixEnabled) {
+                document.getElementById('val-split').innerText = (splitDTC * 100) + '%';
+            }
+            document.getElementById('val-comm').innerText = (clubCommission * 100) + '%';
+
+            document.getElementById('kpi-investment').innerText = formatCurrency(totalInvestment);
+            document.getElementById('kpi-unit-cost').innerText = '$' + landedCost.toFixed(2);
+            document.getElementById('kpi-profit').innerText = formatCurrency(netProfit);
+            document.getElementById('kpi-roi').innerText = roi.toFixed(1) + '%';
+            const roiSub = document.getElementById('kpi-roi-sub');
+            roiSub.innerText = netProfit >= 0
+                ? 'Equivale a ' + formatCurrency(netProfit) + ' de retorno neto'
+                : 'Equivale a ' + formatCurrency(Math.abs(netProfit)) + ' de perdida neta';
+            roiSub.className = netProfit >= 0 ? 'kpi-trend positive' : 'kpi-trend';
+
+            // Break-even KPI
+            document.getElementById('kpi-breakeven').innerText = breakEvenPairs.toLocaleString('en-US');
+            document.getElementById('kpi-breakeven-sub').innerText = breakEvenPct + '% del lote (' + qty.toLocaleString('en-US') + ' pares)';
+
+            // Cost breakdowns indicators
+            document.getElementById('breakdown-fob').innerText = '$' + fob.toFixed(2);
+            document.getElementById('breakdown-mold').innerText = '$' + moldPerPair.toFixed(2);
+            document.getElementById('breakdown-shipping').innerText = '$' + shipping.toFixed(2);
+            document.getElementById('breakdown-tariffs').innerText = '$' + tariffs.toFixed(2);
+            document.getElementById('breakdown-landed').innerText = '$' + landedCost.toFixed(2);
+            updateTechnicalMirror({
+                qty,
+                pvp,
+                splitDTC,
+                clubCommission,
+                fixedCostTotal,
+                baseFob,
+                fob,
+                moldPerPair,
+                shipping,
+                tariffs,
+                landedCost,
+                totalInvestment,
+                blendedRevenuePerPair
+            });
+
+            // Change KPI label subtexts based on volume
+            const logLabel = logisticsEnabled ? '' : ' <span style="color:rgba(255,0,127,0.8); font-size:0.75rem">[Sin Logística]</span>';
+            if (qty >= 3000) {
+                document.getElementById('kpi-investment-sub').innerHTML = '<span style="color:var(--accent-primary)">¡Lote de Contenedor FCL Completo!</span>' + logLabel;
+                document.getElementById('kpi-unit-cost-sub').innerHTML = 'Máxima optimización de flete' + logLabel;
+            } else {
+                document.getElementById('kpi-investment-sub').innerHTML = 'Carga LCL parcial' + logLabel;
+                document.getElementById('kpi-unit-cost-sub').innerHTML = 'Costo puesto en bodega' + logLabel;
+            }
+
+            // Update charts
+            updateCharts(totalInvestment, totalRevenue, netProfit, qty, landedCost);
+        }
+
+        function updateCharts(investment, revenue, profit, currentQty, currentLanded) {
+            // Update Revenue vs Cost Bar Chart
+            if (revenueChartObj) {
+                revenueChartObj.data.datasets[0].data = [investment, revenue, profit];
+                revenueChartObj.update();
+            }
+
+            // Generate curves for costs chart (respects logistics toggle)
+            const baseFob = getVarTotal();
+            const fixedCostTotal = getFixedTotal();
+            const currentIdx = volumeLevels.indexOf(currentQty);
+            const currentShipping = parseFloat(document.getElementById('tech-shipping')?.value) || shippingSeries[currentIdx];
+            const shippingFactor = shippingSeries[currentIdx] ? currentShipping / shippingSeries[currentIdx] : 1;
+            const importRate = ((parseFloat(document.getElementById('tech-import-rate')?.value) || 0) / 100) || importRateSeries[currentIdx];
+            const costsData = volumeLevels.map((vol, idx) => {
+                const f = baseFob * fobDiscountFactors[idx];
+                const m = fixedCostTotal / vol;
+                const s = logisticsEnabled ? shippingSeries[idx] * shippingFactor : 0;
+                const t = logisticsEnabled ? Math.max((f * importRate) - s, 0) : 0;
+                return f + m + s + t;
+            });
+
+            if (costsChartObj) {
+                costsChartObj.data.datasets[0].data = costsData;
+                
+                // Highlight current point
+                costsChartObj.data.datasets[1].data = volumeLevels.map((v, i) => i === currentIdx ? costsData[i] : null);
+                
+                costsChartObj.update();
+            }
+        }
+
+        function initCharts() {
+            if (typeof Chart === 'undefined') {
+                document.querySelectorAll('.chart-box canvas').forEach(canvas => {
+                    const fallback = document.createElement('p');
+                    fallback.style.color = 'var(--text-secondary)';
+                    fallback.style.fontSize = '0.85rem';
+                    fallback.style.lineHeight = '1.5';
+                    fallback.innerText = 'La grafica se cargara cuando Chart.js este disponible.';
+                    canvas.replaceWith(fallback);
+                });
+                return;
+            }
+
+            // Chart 1: Revenue & Profit
+            const ctxRev = document.getElementById('chart-revenue').getContext('2d');
+            revenueChartObj = new Chart(ctxRev, {
+                type: 'bar',
+                data: {
+                    labels: ['Inversión Total', 'Ingresos Netos', 'Ganancia Neta'],
+                    datasets: [{
+                        label: 'Dólares (USD)',
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgba(255, 255, 255, 0.08)',
+                            'rgba(79, 172, 254, 0.4)',
+                            'rgba(0, 230, 118, 0.4)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 255, 255, 0.2)',
+                            '#4facfe',
+                            '#00e676'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#a0aec0' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#a0aec0' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Cost reduction curve
+            const ctxCost = document.getElementById('chart-costs').getContext('2d');
+            costsChartObj = new Chart(ctxCost, {
+                type: 'line',
+                data: {
+                    labels: ['1K', '1.5K', '2K', '2.5K', '3K', '3.5K', '4K'],
+                    datasets: [
+                        {
+                            label: 'Costo por Par ($)',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: '#00f2fe',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Punto Seleccionado',
+                            data: [null, null, null, null, null, null, null],
+                            backgroundColor: '#ff007f',
+                            borderColor: '#ff007f',
+                            borderWidth: 2,
+                            pointRadius: 8,
+                            pointHoverRadius: 10,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#a0aec0' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#a0aec0' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ─── Editable Cost Table Logic ─────────────────────────────────────
+
+        function getFixedTotal() {
+            let total = 0;
+            document.querySelectorAll('#costos .fixed-cost-input').forEach(inp => {
+                total += parseFloat(inp.value) || 0;
+            });
+            return total;
+        }
+
+        function getVarTotal() {
+            let total = 0;
+            document.querySelectorAll('#costos .var-cost-input').forEach(inp => {
+                total += parseFloat(inp.value) || 0;
+            });
+            return total;
+        }
+
+        function setText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = value;
+        }
+
+        function formatCurrencyCents(num) {
+            return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function updateTechnicalMirror(state) {
+            const qty = state.qty;
+            const discount = state.baseFob > 0 ? state.fob / state.baseFob : 1;
+
+            setText('scenario-qty', qty.toLocaleString('en-US'));
+            setText('scenario-channel', salesMixEnabled ? 'Directo' : 'Distribuidor');
+            setText('scenario-revenue-pair', '$' + state.blendedRevenuePerPair.toFixed(2));
+            setText('scenario-logistics', logisticsEnabled ? 'Incluida' : 'Sin logistica');
+            setText('scenario-landed-unit', '$' + state.landedCost.toFixed(2));
+            setText('scenario-fixed-total', formatCurrency(state.fixedCostTotal));
+            setText('scenario-fixed-per-pair', '$' + state.moldPerPair.toFixed(2) + '/par');
+            setText('scenario-var-adjusted', '$' + state.fob.toFixed(2) + '/par');
+            setText('scenario-var-total', formatCurrency(state.fob * qty));
+            setText('scenario-shipping', '$' + (logisticsEnabled ? state.shipping : 0).toFixed(2) + '/par');
+            setText('scenario-import', '$' + (logisticsEnabled ? state.tariffs : 0).toFixed(2) + '/par');
+
+            document.querySelectorAll('#costos .fixed-cost-input').forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                const row = input.closest('tr');
+                const unit = row?.querySelector('.fixed-unit-impact');
+                const total = row?.querySelector('.fixed-total-impact');
+                if (unit) unit.innerText = '$' + (value / qty).toFixed(2) + '/par';
+                if (total) total.innerText = formatCurrency(value);
+            });
+
+            document.querySelectorAll('#costos .var-cost-input').forEach(input => {
+                const baseValue = parseFloat(input.value) || 0;
+                const adjusted = baseValue * discount;
+                const row = input.closest('tr');
+                const unit = row?.querySelector('.var-adjusted-impact');
+                const total = row?.querySelector('.var-total-impact');
+                if (unit) unit.innerText = '$' + adjusted.toFixed(2) + '/par';
+                if (total) total.innerText = formatCurrency(adjusted * qty);
+            });
+        }
+
+        function recalcFixedTotal() {
+            const total = getFixedTotal();
+
+            // Update fixed cost display
+            document.getElementById('fixed-cost-total').innerText =
+                '$' + total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+            // Trigger main simulator recalc
+            calculate();
+        }
+
+        function recalcVarTotal() {
+            const total = getVarTotal();
+            document.getElementById('var-cost-total').innerText =
+                '$' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            recalcFixedTotal(); // chain to update impact panel + simulator
+        }
+
+        function deleteFixedRow(btn) {
+            btn.closest('tr').remove();
+            recalcFixedTotal();
+        }
+
+        function deleteVarRow(btn) {
+            btn.closest('tr').remove();
+            recalcVarTotal();
+        }
+
+        let fixedRowCounter = 10;
+        function addFixedRow() {
+            const id = 'custom-fixed-' + (++fixedRowCounter);
+            const tbody = document.getElementById('fixed-cost-body');
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-id', id);
+            tr.innerHTML = `
+                <td>
+                    <input type="text" style="background:transparent; border:none; border-bottom:1px solid var(--border-color); color:var(--text-primary); font-size:0.85rem; padding:0.2rem 0; width:90%; outline:none;" placeholder="Nombre del concepto...">
+                    <span class="cost-badge badge-editable">editable</span>
+                </td>
+                <td>
+                    <input type="number" class="cost-input fixed-cost-input" value="0" min="0" step="100" oninput="recalcFixedTotal()">
+                </td>
+                <td><button class="del-btn" onclick="deleteFixedRow(this)" title="Eliminar fila">✕</button></td>
+            `;
+            tbody.appendChild(tr);
+            tr.querySelector('input[type=text]').focus();
+        }
+
+        let varRowCounter = 10;
+        function addVarRow() {
+            const id = 'custom-var-' + (++varRowCounter);
+            const tbody = document.getElementById('var-cost-body');
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-id', id);
+            tr.innerHTML = `
+                <td>
+                    <input type="text" style="background:transparent; border:none; border-bottom:1px solid var(--border-color); color:var(--text-primary); font-size:0.85rem; padding:0.2rem 0; width:90%; outline:none;" placeholder="Nombre del concepto...">
+                    <span class="cost-badge badge-var">variable</span>
+                </td>
+                <td>
+                    <input type="number" class="cost-input var-cost-input" value="0.00" min="0" step="0.5" oninput="recalcVarTotal()">
+                </td>
+                <td><button class="del-btn" onclick="deleteVarRow(this)" title="Eliminar fila">✕</button></td>
+            `;
+            tbody.appendChild(tr);
+            tr.querySelector('input[type=text]').focus();
+        }
+
+        // Initialize dashboard
+        window.onload = function() {
+            document.getElementById('salesmix-toggle-row').querySelector('strong').innerText = 'Mix de Ventas - Canal Distribuidor';
+            document.getElementById('salesmix-desc').innerText = 'Precio directo a distribuidores (mayorista)';
+            document.getElementById('pvp-label').innerText = 'Precio de Venta a Distribuidor (Mayorista)';
+            document.getElementById('chart-note-text').innerHTML = '<strong style="color: rgba(255,0,127,0.9);">Canal Distribuidor activo:</strong> El precio configurado es tu precio de venta al distribuidor. Ellos aplicaran su margen para llegar al precio final al publico. La comision del club no aplica en este escenario.';
+            document.getElementById('row-shipping').classList.add('dimmed');
+            document.getElementById('row-tariffs').classList.add('dimmed');
+            initCharts();
+            recalcFixedTotal();
+            recalcVarTotal();
+            calculate();
+        };
+    </script>
+</body>
+</html>
