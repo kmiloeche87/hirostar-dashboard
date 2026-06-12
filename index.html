@@ -924,6 +924,14 @@
                         <span>Landed Cost Total Unitario:</span>
                         <span class="breakdown-value" id="breakdown-landed">$56.60</span>
                     </div>
+                    <div class="breakdown-row" id="row-brand-fee" style="margin-top:0.6rem; border-top: 1px dashed rgba(255,0,127,0.2); padding-top:0.8rem;">
+                        <span style="color:rgba(255,0,127,0.85);">Fee a la Marca (15% del ingreso):</span>
+                        <span class="breakdown-value" id="breakdown-brand-fee" style="color:rgba(255,0,127,0.9);">−$19.50</span>
+                    </div>
+                    <div class="breakdown-row" style="font-size:0.8rem; color: var(--text-secondary); margin-top:0.3rem;">
+                        <span>Ingreso Neto tras Fee de Marca:</span>
+                        <span class="breakdown-value" id="breakdown-net-after-fee" style="color:var(--success-color);">$110.50</span>
+                    </div>
                 </div>
             </div>
 
@@ -1511,11 +1519,16 @@
                 blendedRevenuePerPair = pvp;
             }
 
-            const totalRevenue = blendedRevenuePerPair * qty;
+            // Fee a la marca: 15% sobre el ingreso bruto por par
+            const BRAND_FEE_RATE = 0.15;
+            const brandFeePerPair = blendedRevenuePerPair * BRAND_FEE_RATE;
+            const netRevenueAfterFee = blendedRevenuePerPair - brandFeePerPair;
+
+            const totalRevenue = netRevenueAfterFee * qty;
             const netProfit = totalRevenue - totalInvestment;
             const roi = (netProfit / totalInvestment) * 100.0;
 
-            const breakEvenPairs = Math.ceil(totalInvestment / blendedRevenuePerPair);
+            const breakEvenPairs = Math.ceil(totalInvestment / netRevenueAfterFee);
             const breakEvenPct = Math.min((breakEvenPairs / qty) * 100, 100).toFixed(0);
 
             document.getElementById('val-qty').innerText = qty.toLocaleString('en-US');
@@ -1545,6 +1558,8 @@
             document.getElementById('breakdown-shipping').innerText = '$' + shipping.toFixed(2);
             document.getElementById('breakdown-tariffs').innerText = '$' + tariffs.toFixed(2);
             document.getElementById('breakdown-landed').innerText = '$' + landedCost.toFixed(2);
+            document.getElementById('breakdown-brand-fee').innerText = '−$' + brandFeePerPair.toFixed(2);
+            document.getElementById('breakdown-net-after-fee').innerText = '$' + netRevenueAfterFee.toFixed(2);
             updateTechnicalMirror({
                 qty,
                 pvp,
