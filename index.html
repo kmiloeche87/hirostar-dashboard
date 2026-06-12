@@ -753,6 +753,20 @@
         .scen-tab.active.base    { border-color: #4facfe; background: rgba(79,172,254,0.07); box-shadow: 0 0 20px rgba(79,172,254,0.1); }
         .scen-tab.active.ideal   { border-color: #00e676; background: rgba(0,230,118,0.07); box-shadow: 0 0 20px rgba(0,230,118,0.1); }
 
+        /* Sync pills */
+        .sync-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.78rem;
+            color: var(--accent-primary);
+            background: rgba(0,242,254,0.05);
+            border: 1px solid rgba(0,242,254,0.15);
+            border-radius: 20px;
+            padding: 0.25rem 0.7rem;
+        }
+        .sync-pill strong { color: #fff; }
+
         /* Footer */
         footer {
             border-top: 1px solid var(--border-color);
@@ -1465,6 +1479,14 @@
                     <div style="flex:1;min-width:200px;">
                         <p id="scen-desc" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">Solo Colombia activo. Crecimiento orgánico conservador. Contrato honrado con 1-3 países en 5 años. Base real y alcanzable.</p>
                     </div>
+                </div>
+
+                <!-- Sync bar: valores conectados desde tabla técnica -->
+                <div id="val-sync-bar" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;align-items:center;">
+                    <span class="sync-pill">🔗 FOB base: <strong>$38.00/par</strong></span>
+                    <span class="sync-pill">🔗 Inv. fija: <strong>$57.0K</strong></span>
+                    <span class="sync-pill" style="color:rgba(255,100,100,0.8);">🔗 Logística: <strong>Excluida</strong></span>
+                    <span class="sync-pill" style="color:var(--text-secondary);font-style:italic;">PVP y canal: independientes</span>
                 </div>
 
                 <!-- Controls Grid -->
@@ -2196,6 +2218,48 @@
             return '$' + n.toFixed(0);
         }
 
+        // ── Helpers: volume-based cost lookup (mirrors main simulator) ─────────
+        function getFobDiscountForVolume(pairs) {
+            // volumeLevels = [1000,1500,2000,2500,3000,3500,4000]
+            // fobDiscountFactors = [1.00,0.96,0.92,0.86,0.81,0.79,0.78]
+            if (pairs <= 1000) return 1.00;
+            if (pairs >= 4000) return 0.78;
+            const levels  = [1000,1500,2000,2500,3000,3500,4000];
+            const factors = [1.00,0.96,0.92,0.86,0.81,0.79,0.78];
+            for (let i = 0; i < levels.length - 1; i++) {
+                if (pairs >= levels[i] && pairs < levels[i+1]) {
+                    const t = (pairs - levels[i]) / (levels[i+1] - levels[i]);
+                    return factors[i] + t * (factors[i+1] - factors[i]);
+                }
+            }
+            return 0.78;
+        }
+
+        function getLogisticsCostForVolume(fob, pairs) {
+            // shipping series (per pair): [3.50,3.00,2.50,2.00,1.67,1.50,1.40]
+            // import rate series: [0.40,0.38,0.36,0.34,0.31,0.30,0.29]
+            const levels   = [1000,1500,2000,2500,3000,3500,4000];
+            const shipping = [3.50,3.00,2.50,2.00,1.67,1.50,1.40];
+            const impRates = [0.40,0.38,0.36,0.34,0.31,0.30,0.29];
+            let sh, ir;
+            if (pairs <= 1000)      { sh = shipping[0]; ir = impRates[0]; }
+            else if (pairs >= 4000) { sh = shipping[6]; ir = impRates[6]; }
+            else {
+                for (let i = 0; i < levels.length - 1; i++) {
+                    if (pairs >= levels[i] && pairs < levels[i+1]) {
+                        const t = (pairs - levels[i]) / (levels[i+1] - levels[i]);
+                        sh = shipping[i] + t * (shipping[i+1] - shipping[i]);
+                        ir = impRates[i] + t * (impRates[i+1] - impRates[i]);
+                        break;
+                    }
+                }
+            }
+            const importAndFreight = fob * ir;
+            const tariffs = Math.max(importAndFreight - sh, 0);
+            return sh + tariffs; // total logistics per pair
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         function calcValuation() {
             const yr5c   = parseInt(document.getElementById('range-countries').value);
             const ppc    = parseInt(document.getElementById('range-ppc').value);
@@ -2211,29 +2275,55 @@
             document.getElementById('val-opex').innerText = document.getElementById('range-opex').value + '%';
             document.getElementById('val-mult').innerText = mult + '×';
 
-            // Build 5-year projection using active scenario country ramp or linear interpolation
-            const s = SCENARIOS[activeScenario];
-            const costPerPair = getVarTotal() || 38; // FOB from main simulator
+            // ── Valores conectados desde la Tabla Técnica ────────────────────
+            const baseFob      = getVarTotal()  || 38;   // FOB base editable
+            const fixedTotal   = getFixedTotal() || 57000; // Inversión fija total
+            const logOn        = logisticsEnabled;         // Toggle logística
 
-            const years = [1,2,3,4,5];
-            const revenues = [], ebitdas = [], cumFlows = [];
+            // Actualizar sync bar
+            const syncEl = document.getElementById('val-sync-bar');
+            if (syncEl) {
+                syncEl.innerHTML = `
+                    <span class="sync-pill">🔗 FOB base: <strong>$${baseFob.toFixed(2)}/par</strong></span>
+                    <span class="sync-pill">🔗 Inv. fija: <strong>$${(fixedTotal/1000).toFixed(1)}K</strong></span>
+                    <span class="sync-pill" style="color:${logOn ? 'var(--success-color)' : 'rgba(255,100,100,0.8)'}">🔗 Logística: <strong>${logOn ? 'Incluida' : 'Excluida'}</strong></span>
+                    <span class="sync-pill" style="color:var(--text-secondary);font-style:italic;">PVP y canal: independientes</span>
+                `;
+            }
+
+            // ── Calcular total de pares en 5 años para amortizar inversión fija ─
+            let totalPairs5 = 0;
+            for (let i = 0; i < 5; i++) {
+                const fc = i === 0 ? 1 : Math.round(1 + (yr5c - 1) * (i / 4));
+                totalPairs5 += fc * ppc;
+            }
+            const amortPerPair = fixedTotal / Math.max(totalPairs5, 1);
+
+            // ── Proyección año a año ─────────────────────────────────────────
+            const revenues = [], ebitdas = [], cumFlows = [], cogsPerPairs = [];
             const tableRows = [];
             let cumFlow = 0;
 
             for (let i = 0; i < 5; i++) {
-                // Interpolate countries linearly from 1 to yr5c
                 const fracCountries = i === 0 ? 1 : Math.round(1 + (yr5c - 1) * (i / 4));
                 const pairsTotal = fracCountries * ppc;
 
-                // Revenue model: mix of DTC (PVP) and distributor (PVP * 0.55)
-                const dtcRev = pvp;
-                const distRev = pvp * 0.55;
-                const blended = dtcPct * dtcRev + (1 - dtcPct) * distRev;
+                // FOB con descuento por volumen (igual que simulador principal)
+                const fobDiscount = getFobDiscountForVolume(pairsTotal);
+                const fobYear = baseFob * fobDiscount;
 
+                // Logística si está activa
+                const logCostPerPair = logOn ? getLogisticsCostForVolume(fobYear, pairsTotal) : 0;
+
+                // Costo total por par = FOB descontado + amortización fija + logística
+                const landedPerPair = fobYear + amortPerPair + logCostPerPair;
+                const cogs = pairsTotal * landedPerPair;
+
+                // Revenue model: mix de DTC (PVP) y distribuidor (PVP × 0.55)
+                const blended = dtcPct * pvp + (1 - dtcPct) * pvp * 0.55;
                 const grossRev = pairsTotal * blended;
                 const brandFee = grossRev * 0.15;
                 const netRev = grossRev - brandFee;
-                const cogs = pairsTotal * costPerPair;
                 const grossProfit = netRev - cogs;
                 const opex = netRev * opexPct;
                 const ebitda = grossProfit - opex;
@@ -2243,11 +2333,13 @@
                 revenues.push(netRev);
                 ebitdas.push(ebitda);
                 cumFlows.push(cumFlow);
+                cogsPerPairs.push(landedPerPair);
 
                 tableRows.push({
                     yr: i + 1,
                     countries: fracCountries,
                     pairs: pairsTotal,
+                    fobYear, amortPerPair, logCostPerPair, landedPerPair,
                     grossRev, brandFee, netRev,
                     cogs, grossProfit,
                     opex, ebitda, ebitdaMargin
@@ -2275,6 +2367,7 @@
             tableRows.forEach(r => {
                 const tr = document.createElement('tr');
                 const ebitdaColor = r.ebitda >= 0 ? 'var(--success-color)' : '#ff6b9d';
+                const landedTooltip = `FOB $${r.fobYear.toFixed(2)} + Amort. $${r.amortPerPair.toFixed(2)} + Log. $${r.logCostPerPair.toFixed(2)} = $${r.landedPerPair.toFixed(2)}/par`;
                 tr.innerHTML = `
                     <td><strong>Año ${r.yr}</strong></td>
                     <td>${r.countries}</td>
@@ -2282,7 +2375,7 @@
                     <td class="calculated-cell">${fmtM(r.grossRev)}</td>
                     <td style="color:rgba(255,0,127,0.8);">−${fmtM(r.brandFee)}</td>
                     <td class="calculated-cell scenario-impact">${fmtM(r.netRev)}</td>
-                    <td class="calculated-cell">−${fmtM(r.cogs)}</td>
+                    <td class="calculated-cell" title="${landedTooltip}" style="cursor:help;">−${fmtM(r.cogs)} <span style="font-size:0.7rem;color:var(--text-secondary);">${r.landedPerPair.toFixed(1)}/par</span></td>
                     <td class="calculated-cell">${fmtM(r.grossProfit)}</td>
                     <td style="color:rgba(255,100,100,0.8);">−${fmtM(r.opex)}</td>
                     <td style="color:${ebitdaColor};font-weight:700;">${fmtM(r.ebitda)}</td>
@@ -2395,15 +2488,29 @@
 
         function computeAllScenariosValuation() {
             const ebitdas = [], valuations = [];
-            const costPerPair = getVarTotal() || 38;
+            const baseFob    = getVarTotal()  || 38;
+            const fixedTotal = getFixedTotal() || 57000;
+            const logOn      = logisticsEnabled;
             ['modesto','base','ideal'].forEach(key => {
                 const s = SCENARIOS[key];
                 const yr5c = s.countries[4];
                 const ppc = s.ppc;
+                // Total 5-year pairs for amortization
+                let totalP5 = 0;
+                for (let i = 0; i < 5; i++) {
+                    const fc = i === 0 ? 1 : Math.round(1 + (yr5c - 1) * (i / 4));
+                    totalP5 += fc * ppc;
+                }
+                const amort = fixedTotal / Math.max(totalP5, 1);
+                // Year 5 values
                 const pairs = yr5c * ppc;
+                const fobDisc = getFobDiscountForVolume(pairs);
+                const fobY5 = baseFob * fobDisc;
+                const logC = logOn ? getLogisticsCostForVolume(fobY5, pairs) : 0;
+                const landedY5 = fobY5 + amort + logC;
                 const blended = (s.dtc/100) * s.pvp + (1 - s.dtc/100) * s.pvp * 0.55;
                 const netRev = pairs * blended * 0.85;
-                const cogs = pairs * costPerPair;
+                const cogs = pairs * landedY5;
                 const ebitda = netRev - cogs - netRev * (s.opex/100);
                 const val = ebitda * s.mult;
                 ebitdas.push(Math.max(ebitda, 0));
