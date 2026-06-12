@@ -714,6 +714,45 @@
             font-weight: 700;
         }
 
+        /* Scenario Tabs */
+        .scen-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.15rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 0.9rem 1.4rem;
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 160px;
+        }
+        .scen-tab small {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+        .scen-tab:hover {
+            border-color: rgba(0,242,254,0.3);
+            background: rgba(0,242,254,0.04);
+            color: var(--text-primary);
+        }
+        .scen-tab.active {
+            border-color: var(--accent-primary);
+            background: rgba(0,242,254,0.07);
+            color: var(--text-primary);
+            box-shadow: 0 0 20px rgba(0,242,254,0.1);
+        }
+        .scen-tab.active.modesto { border-color: #ffc107; background: rgba(255,193,7,0.07); box-shadow: 0 0 20px rgba(255,193,7,0.1); }
+        .scen-tab.active.base    { border-color: #4facfe; background: rgba(79,172,254,0.07); box-shadow: 0 0 20px rgba(79,172,254,0.1); }
+        .scen-tab.active.ideal   { border-color: #00e676; background: rgba(0,230,118,0.07); box-shadow: 0 0 20px rgba(0,230,118,0.1); }
+
         /* Footer */
         footer {
             border-top: 1px solid var(--border-color);
@@ -777,6 +816,7 @@
         </div>
         <div class="nav-links">
             <a href="#simulator" class="nav-link active">Simulador de ROI</a>
+            <a href="#valoracion" class="nav-link">Valoración Empresa</a>
             <a href="#tech" class="nav-link">Especificaciones</a>
             <a href="#sizing" class="nav-link">Distribución de Tallas</a>
         </div>
@@ -1390,6 +1430,202 @@
 
         </div>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- VALORACIÓN DE EMPRESA — 3 PANORAMAS / 5 AÑOS          -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <div id="valoracion" style="margin-bottom:2.5rem;">
+            <div class="card">
+                <h3 class="card-title">
+                    Valoración de Empresa &amp; Proyección 5 Años
+                    <span style="font-size:0.8rem;font-weight:400;color:var(--text-secondary);font-family:'Inter',sans-serif;">Contrato exclusivo de maquila Hirostar · 46 países disponibles</span>
+                </h3>
+
+                <!-- Scenario Tabs -->
+                <div style="display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap;">
+                    <button class="scen-tab active" id="tab-modesto" onclick="setScenario('modesto')">
+                        <span style="font-size:1.1rem;">🟡</span> Modesto
+                        <small>3 países · ~15k pares/año</small>
+                    </button>
+                    <button class="scen-tab" id="tab-base" onclick="setScenario('base')">
+                        <span style="font-size:1.1rem;">🔵</span> Base
+                        <small>15 países · ~120k pares/año</small>
+                    </button>
+                    <button class="scen-tab" id="tab-ideal" onclick="setScenario('ideal')">
+                        <span style="font-size:1.1rem;">🟢</span> Ideal
+                        <small>46 países · ~690k pares/año</small>
+                    </button>
+                </div>
+
+                <!-- Scenario Banner -->
+                <div id="scen-banner" style="background:rgba(255,193,7,0.06);border:1px solid rgba(255,193,7,0.2);border-radius:14px;padding:1rem 1.4rem;margin-bottom:2rem;display:flex;gap:2rem;flex-wrap:wrap;align-items:center;">
+                    <div>
+                        <p style="font-size:0.72rem;color:rgba(255,193,7,0.8);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:0.2rem;">Panorama activo</p>
+                        <p id="scen-name" style="font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;">Modesto</p>
+                    </div>
+                    <div style="flex:1;min-width:200px;">
+                        <p id="scen-desc" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">Solo Colombia activo. Crecimiento orgánico conservador. Contrato honrado con 1-3 países en 5 años. Base real y alcanzable.</p>
+                    </div>
+                </div>
+
+                <!-- Controls Grid -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;">
+                    <div>
+                        <p style="font-size:0.75rem;color:var(--accent-primary);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:1rem;">Variables del Modelo</p>
+
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Países activos al final del año 5</span>
+                                <span class="value-bubble" id="val-countries">3</span>
+                            </div>
+                            <input type="range" id="range-countries" min="1" max="46" step="1" value="3" oninput="calcValuation()">
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-secondary);margin-top:0.3rem;">
+                                <span>1 (Solo Colombia)</span><span>46 (Global)</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Pares por país / año (promedio)</span>
+                                <span class="value-bubble" id="val-ppc">5,000</span>
+                            </div>
+                            <input type="range" id="range-ppc" min="1000" max="20000" step="500" value="5000" oninput="calcValuation()">
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-secondary);margin-top:0.3rem;">
+                                <span>1,000</span><span>20,000</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>PVP promedio por par (USD)</span>
+                                <span class="value-bubble" id="val-vpvp">$109</span>
+                            </div>
+                            <input type="range" id="range-vpvp" min="89" max="159" step="10" value="109" oninput="calcValuation()">
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-secondary);margin-top:0.3rem;">
+                                <span>$89 (T1 Junior)</span><span>$159 (T1 Elite)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p style="font-size:0.75rem;color:rgba(255,0,127,0.8);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:1rem;">Parámetros Financieros</p>
+
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>% Canal Directo (DTC)</span>
+                                <span class="value-bubble" id="val-vdtc">20%</span>
+                            </div>
+                            <input type="range" id="range-vdtc" min="0" max="100" step="10" value="20" oninput="calcValuation()">
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-secondary);margin-top:0.3rem;">
+                                <span>0% (Todo distribuidor)</span><span>100% (Todo directo)</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Gastos Operativos (% ingresos netos)</span>
+                                <span class="value-bubble" id="val-opex">25%</span>
+                            </div>
+                            <input type="range" id="range-opex" min="10" max="50" step="5" value="25" oninput="calcValuation()">
+                        </div>
+
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Múltiplo de valoración (×EBITDA)</span>
+                                <span class="value-bubble" id="val-mult">5×</span>
+                            </div>
+                            <input type="range" id="range-mult" min="3" max="10" step="1" value="5" oninput="calcValuation()">
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-secondary);margin-top:0.3rem;">
+                                <span>3× (Conservador)</span><span>10× (Alto crecimiento)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Row -->
+                <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2rem;" id="val-kpi-row">
+                    <div class="kpi-card" style="padding:1.2rem;">
+                        <p class="kpi-label" style="font-size:0.72rem;">Pares Año 5</p>
+                        <h3 class="kpi-value" id="vkpi-pairs" style="font-size:1.6rem;">15,000</h3>
+                        <p class="kpi-trend" id="vkpi-pairs-sub" style="font-size:0.72rem;color:var(--text-secondary);">3 países × 5,000 pares</p>
+                    </div>
+                    <div class="kpi-card" style="padding:1.2rem;">
+                        <p class="kpi-label" style="font-size:0.72rem;">Ingresos Netos Año 5</p>
+                        <h3 class="kpi-value" id="vkpi-revenue" style="font-size:1.6rem;">$1.4M</h3>
+                        <p class="kpi-trend positive" id="vkpi-revenue-sub" style="font-size:0.72rem;">Tras fee 15% marca</p>
+                    </div>
+                    <div class="kpi-card" style="padding:1.2rem;">
+                        <p class="kpi-label" style="font-size:0.72rem;">EBITDA Año 5</p>
+                        <h3 class="kpi-value" id="vkpi-ebitda" style="font-size:1.6rem;">$280K</h3>
+                        <p class="kpi-trend" id="vkpi-ebitda-sub" style="font-size:0.72rem;color:var(--text-secondary);">Margen operativo</p>
+                    </div>
+                    <div class="kpi-card" style="padding:1.2rem;border-color:rgba(0,230,118,0.25);background:rgba(0,230,118,0.03);">
+                        <p class="kpi-label" style="font-size:0.72rem;color:rgba(0,230,118,0.8);">Valoración Empresa</p>
+                        <h3 class="kpi-value" id="vkpi-valuation" style="font-size:1.6rem;background:linear-gradient(135deg,#00e676,#00f2fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">$1.4M</h3>
+                        <p class="kpi-trend" id="vkpi-val-sub" style="font-size:0.72rem;color:var(--text-secondary);">EBITDA × múltiplo</p>
+                    </div>
+                    <div class="kpi-card" style="padding:1.2rem;border-color:rgba(255,0,127,0.2);background:rgba(255,0,127,0.03);">
+                        <p class="kpi-label" style="font-size:0.72rem;color:rgba(255,0,127,0.7);">Flujo Acumulado 5A</p>
+                        <h3 class="kpi-value" id="vkpi-cumflow" style="font-size:1.6rem;background:linear-gradient(135deg,#ff007f,#ff6b9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">$800K</h3>
+                        <p class="kpi-trend" id="vkpi-flow-sub" style="font-size:0.72rem;color:var(--text-secondary);">EBITDA total acumulado</p>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+                    <div class="chart-box" style="min-height:320px;">
+                        <p class="chart-header">Ingresos Netos &amp; EBITDA por Año (USD)</p>
+                        <div style="position:relative;height:280px;">
+                            <canvas id="chart-valrev"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-box" style="min-height:320px;">
+                        <p class="chart-header">Flujo Acumulado &amp; Punto de Equilibrio</p>
+                        <div style="position:relative;height:280px;">
+                            <canvas id="chart-cumflow"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Valuation comparison bar -->
+                <div class="chart-box" style="margin-bottom:0;">
+                    <p class="chart-header">Comparativa de Valoración — 3 Panoramas Simultáneos</p>
+                    <div style="position:relative;height:200px;">
+                        <canvas id="chart-valcomp"></canvas>
+                    </div>
+                    <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.8rem;line-height:1.5;">
+                        <strong style="color:var(--accent-primary);">Nota metodológica:</strong> Valoración por múltiplo EBITDA (método estándar para empresas de manufactura privadas). Los ingresos son netos de fee de marca (15%) y gastos operativos (OPEX). El contrato de 5 años con exclusividad da visibilidad de ingresos, lo que típicamente aumenta el múltiplo aplicable.
+                    </p>
+                </div>
+
+                <!-- 5-Year Table -->
+                <div style="margin-top:2rem;">
+                    <p style="font-size:0.78rem;color:var(--accent-primary);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:1rem;">Proyección Año a Año — Panorama Activo</p>
+                    <div style="overflow-x:auto;">
+                        <table class="cost-table" id="val-table">
+                            <thead>
+                                <tr>
+                                    <th>Año</th>
+                                    <th>Países</th>
+                                    <th>Pares Totales</th>
+                                    <th>Ingreso Bruto</th>
+                                    <th>Fee Marca (15%)</th>
+                                    <th>Ingreso Neto</th>
+                                    <th>Costo Producción</th>
+                                    <th>Margen Bruto</th>
+                                    <th>OPEX</th>
+                                    <th>EBITDA</th>
+                                    <th>Margen EBITDA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="val-table-body"></tbody>
+                            <tfoot id="val-table-foot"></tfoot>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <!-- Footer -->
@@ -1867,7 +2103,333 @@
             recalcFixedTotal();
             recalcVarTotal();
             calculate();
+            initValuationCharts();
+            setScenario('modesto');
         };
+
+        // ─── VALORACIÓN DE EMPRESA ─────────────────────────────────────
+
+        let valRevChart = null;
+        let valCumChart = null;
+        let valCompChart = null;
+
+        const SCENARIOS = {
+            modesto: {
+                name: 'Modesto',
+                desc: 'Solo Colombia activo. Crecimiento orgánico conservador. Contrato honrado con 1-3 países en 5 años. Base real y alcanzable.',
+                countries: [1, 1, 2, 2, 3],
+                ppc: 4500,
+                pvp: 109,
+                dtc: 20,
+                opex: 28,
+                mult: 4,
+                color: '#ffc107',
+                banner: 'rgba(255,193,7,0.06)',
+                bannerBorder: 'rgba(255,193,7,0.2)',
+                tabClass: 'modesto'
+            },
+            base: {
+                name: 'Base',
+                desc: 'Expansión moderada a 15 países en 5 años. Hirostar activa representantes en Latinoamérica y parte de Europa. Canal mixto con creciente DTC.',
+                countries: [1, 3, 6, 10, 15],
+                ppc: 7000,
+                pvp: 119,
+                dtc: 40,
+                opex: 22,
+                mult: 6,
+                color: '#4facfe',
+                banner: 'rgba(79,172,254,0.06)',
+                bannerBorder: 'rgba(79,172,254,0.2)',
+                tabClass: 'base'
+            },
+            ideal: {
+                name: 'Ideal',
+                desc: 'Activación acelerada de los 46 países. Hirostar usa su red global existente. Canal directo dominante, altos márgenes y valoración premium.',
+                countries: [2, 8, 18, 30, 46],
+                ppc: 12000,
+                pvp: 129,
+                dtc: 65,
+                opex: 18,
+                mult: 8,
+                color: '#00e676',
+                banner: 'rgba(0,230,118,0.06)',
+                bannerBorder: 'rgba(0,230,118,0.2)',
+                tabClass: 'ideal'
+            }
+        };
+
+        let activeScenario = 'modesto';
+
+        function setScenario(key) {
+            activeScenario = key;
+            const s = SCENARIOS[key];
+
+            // Update tabs
+            document.querySelectorAll('.scen-tab').forEach(t => {
+                t.classList.remove('active','modesto','base','ideal');
+            });
+            const activeTab = document.getElementById('tab-' + key);
+            activeTab.classList.add('active', s.tabClass);
+
+            // Update banner
+            const banner = document.getElementById('scen-banner');
+            banner.style.background = s.banner;
+            banner.style.borderColor = s.bannerBorder;
+            document.getElementById('scen-name').innerText = s.name;
+            document.getElementById('scen-desc').innerText = s.desc;
+
+            // Set sliders
+            const yr5countries = s.countries[4];
+            document.getElementById('range-countries').value = yr5countries;
+            document.getElementById('range-ppc').value = s.ppc;
+            document.getElementById('range-vpvp').value = s.pvp;
+            document.getElementById('range-vdtc').value = s.dtc;
+            document.getElementById('range-opex').value = s.opex;
+            document.getElementById('range-mult').value = s.mult;
+
+            calcValuation();
+        }
+
+        function fmtM(n) {
+            if (Math.abs(n) >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+            if (Math.abs(n) >= 1e3) return '$' + (n/1e3).toFixed(0) + 'K';
+            return '$' + n.toFixed(0);
+        }
+
+        function calcValuation() {
+            const yr5c   = parseInt(document.getElementById('range-countries').value);
+            const ppc    = parseInt(document.getElementById('range-ppc').value);
+            const pvp    = parseInt(document.getElementById('range-vpvp').value);
+            const dtcPct = parseInt(document.getElementById('range-vdtc').value) / 100;
+            const opexPct= parseInt(document.getElementById('range-opex').value) / 100;
+            const mult   = parseInt(document.getElementById('range-mult').value);
+
+            document.getElementById('val-countries').innerText = yr5c;
+            document.getElementById('val-ppc').innerText = ppc.toLocaleString('en-US');
+            document.getElementById('val-vpvp').innerText = '$' + pvp;
+            document.getElementById('val-vdtc').innerText = document.getElementById('range-vdtc').value + '%';
+            document.getElementById('val-opex').innerText = document.getElementById('range-opex').value + '%';
+            document.getElementById('val-mult').innerText = mult + '×';
+
+            // Build 5-year projection using active scenario country ramp or linear interpolation
+            const s = SCENARIOS[activeScenario];
+            const costPerPair = getVarTotal() || 38; // FOB from main simulator
+
+            const years = [1,2,3,4,5];
+            const revenues = [], ebitdas = [], cumFlows = [];
+            const tableRows = [];
+            let cumFlow = 0;
+
+            for (let i = 0; i < 5; i++) {
+                // Interpolate countries linearly from 1 to yr5c
+                const fracCountries = i === 0 ? 1 : Math.round(1 + (yr5c - 1) * (i / 4));
+                const pairsTotal = fracCountries * ppc;
+
+                // Revenue model: mix of DTC (PVP) and distributor (PVP * 0.55)
+                const dtcRev = pvp;
+                const distRev = pvp * 0.55;
+                const blended = dtcPct * dtcRev + (1 - dtcPct) * distRev;
+
+                const grossRev = pairsTotal * blended;
+                const brandFee = grossRev * 0.15;
+                const netRev = grossRev - brandFee;
+                const cogs = pairsTotal * costPerPair;
+                const grossProfit = netRev - cogs;
+                const opex = netRev * opexPct;
+                const ebitda = grossProfit - opex;
+                const ebitdaMargin = netRev > 0 ? (ebitda / netRev * 100) : 0;
+                cumFlow += ebitda;
+
+                revenues.push(netRev);
+                ebitdas.push(ebitda);
+                cumFlows.push(cumFlow);
+
+                tableRows.push({
+                    yr: i + 1,
+                    countries: fracCountries,
+                    pairs: pairsTotal,
+                    grossRev, brandFee, netRev,
+                    cogs, grossProfit,
+                    opex, ebitda, ebitdaMargin
+                });
+            }
+
+            // KPIs
+            const lastRow = tableRows[4];
+            const valuation = lastRow.ebitda * mult;
+
+            document.getElementById('vkpi-pairs').innerText = lastRow.pairs.toLocaleString('en-US');
+            document.getElementById('vkpi-pairs-sub').innerText = yr5c + ' países × ' + ppc.toLocaleString('en-US') + ' pares';
+            document.getElementById('vkpi-revenue').innerText = fmtM(lastRow.netRev);
+            document.getElementById('vkpi-revenue-sub').innerText = 'Tras fee 15% marca';
+            document.getElementById('vkpi-ebitda').innerText = fmtM(lastRow.ebitda);
+            document.getElementById('vkpi-ebitda-sub').innerText = lastRow.ebitdaMargin.toFixed(1) + '% margen';
+            document.getElementById('vkpi-valuation').innerText = fmtM(valuation);
+            document.getElementById('vkpi-val-sub').innerText = fmtM(lastRow.ebitda) + ' × ' + mult + '×';
+            document.getElementById('vkpi-cumflow').innerText = fmtM(cumFlow);
+            document.getElementById('vkpi-flow-sub').innerText = 'EBITDA total 5 años';
+
+            // Table
+            const tbody = document.getElementById('val-table-body');
+            tbody.innerHTML = '';
+            tableRows.forEach(r => {
+                const tr = document.createElement('tr');
+                const ebitdaColor = r.ebitda >= 0 ? 'var(--success-color)' : '#ff6b9d';
+                tr.innerHTML = `
+                    <td><strong>Año ${r.yr}</strong></td>
+                    <td>${r.countries}</td>
+                    <td>${r.pairs.toLocaleString('en-US')}</td>
+                    <td class="calculated-cell">${fmtM(r.grossRev)}</td>
+                    <td style="color:rgba(255,0,127,0.8);">−${fmtM(r.brandFee)}</td>
+                    <td class="calculated-cell scenario-impact">${fmtM(r.netRev)}</td>
+                    <td class="calculated-cell">−${fmtM(r.cogs)}</td>
+                    <td class="calculated-cell">${fmtM(r.grossProfit)}</td>
+                    <td style="color:rgba(255,100,100,0.8);">−${fmtM(r.opex)}</td>
+                    <td style="color:${ebitdaColor};font-weight:700;">${fmtM(r.ebitda)}</td>
+                    <td style="color:${ebitdaColor};">${r.ebitdaMargin.toFixed(1)}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Footer totals
+            const totalPairs = tableRows.reduce((a,r) => a + r.pairs, 0);
+            const totalGross = tableRows.reduce((a,r) => a + r.grossRev, 0);
+            const totalFee   = tableRows.reduce((a,r) => a + r.brandFee, 0);
+            const totalNet   = tableRows.reduce((a,r) => a + r.netRev, 0);
+            const totalCogs  = tableRows.reduce((a,r) => a + r.cogs, 0);
+            const totalOpex  = tableRows.reduce((a,r) => a + r.opex, 0);
+            const totalEBIT  = tableRows.reduce((a,r) => a + r.ebitda, 0);
+            const avgMargin  = totalNet > 0 ? (totalEBIT / totalNet * 100) : 0;
+            document.getElementById('val-table-foot').innerHTML = `
+                <tr style="background:rgba(0,242,254,0.04);font-weight:700;">
+                    <td>TOTAL 5A</td>
+                    <td>—</td>
+                    <td>${totalPairs.toLocaleString('en-US')}</td>
+                    <td class="calculated-cell">${fmtM(totalGross)}</td>
+                    <td style="color:rgba(255,0,127,0.8);">−${fmtM(totalFee)}</td>
+                    <td class="calculated-cell scenario-impact">${fmtM(totalNet)}</td>
+                    <td class="calculated-cell">−${fmtM(totalCogs)}</td>
+                    <td class="calculated-cell">${fmtM(totalGross - totalFee - totalCogs)}</td>
+                    <td style="color:rgba(255,100,100,0.8);">−${fmtM(totalOpex)}</td>
+                    <td style="color:var(--success-color);font-weight:800;">${fmtM(totalEBIT)}</td>
+                    <td style="color:var(--success-color);">${avgMargin.toFixed(1)}%</td>
+                </tr>
+            `;
+
+            // Update charts
+            updateValuationCharts(revenues, ebitdas, cumFlows);
+        }
+
+        function initValuationCharts() {
+            const labelStyle = { color: '#a0aec0' };
+            const gridStyle  = { color: 'rgba(255,255,255,0.05)' };
+
+            // Revenue & EBITDA bar chart
+            valRevChart = new Chart(document.getElementById('chart-valrev'), {
+                type: 'bar',
+                data: {
+                    labels: ['Año 1','Año 2','Año 3','Año 4','Año 5'],
+                    datasets: [
+                        { label: 'Ingreso Neto', data: [0,0,0,0,0], backgroundColor: 'rgba(0,242,254,0.3)', borderColor: '#00f2fe', borderWidth: 2, borderRadius: 6 },
+                        { label: 'EBITDA',        data: [0,0,0,0,0], backgroundColor: 'rgba(0,230,118,0.5)', borderColor: '#00e676', borderWidth: 2, borderRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } },
+                    scales: {
+                        y: { grid: gridStyle, ticks: { ...labelStyle, callback: v => fmtM(v) } },
+                        x: { grid: gridStyle, ticks: labelStyle }
+                    }
+                }
+            });
+
+            // Cumulative flow line chart
+            valCumChart = new Chart(document.getElementById('chart-cumflow'), {
+                type: 'line',
+                data: {
+                    labels: ['Año 1','Año 2','Año 3','Año 4','Año 5'],
+                    datasets: [{
+                        label: 'Flujo Acumulado EBITDA',
+                        data: [0,0,0,0,0],
+                        borderColor: '#ff007f',
+                        backgroundColor: 'rgba(255,0,127,0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#ff007f'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: gridStyle, ticks: { ...labelStyle, callback: v => fmtM(v) } },
+                        x: { grid: gridStyle, ticks: labelStyle }
+                    }
+                }
+            });
+
+            // Comparison bar chart (fixed 3 scenarios)
+            const compData = computeAllScenariosValuation();
+            valCompChart = new Chart(document.getElementById('chart-valcomp'), {
+                type: 'bar',
+                data: {
+                    labels: ['Modesto','Base','Ideal'],
+                    datasets: [
+                        { label: 'EBITDA Año 5', data: compData.ebitdas, backgroundColor: ['rgba(255,193,7,0.6)','rgba(79,172,254,0.6)','rgba(0,230,118,0.6)'], borderColor: ['#ffc107','#4facfe','#00e676'], borderWidth: 2, borderRadius: 8 },
+                        { label: 'Valoración', data: compData.valuations, backgroundColor: ['rgba(255,193,7,0.2)','rgba(79,172,254,0.2)','rgba(0,230,118,0.2)'], borderColor: ['#ffc107','#4facfe','#00e676'], borderWidth: 2, borderRadius: 8, borderDash: [4,4] }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } },
+                    scales: {
+                        y: { grid: gridStyle, ticks: { ...labelStyle, callback: v => fmtM(v) } },
+                        x: { grid: gridStyle, ticks: labelStyle }
+                    }
+                }
+            });
+        }
+
+        function computeAllScenariosValuation() {
+            const ebitdas = [], valuations = [];
+            const costPerPair = getVarTotal() || 38;
+            ['modesto','base','ideal'].forEach(key => {
+                const s = SCENARIOS[key];
+                const yr5c = s.countries[4];
+                const ppc = s.ppc;
+                const pairs = yr5c * ppc;
+                const blended = (s.dtc/100) * s.pvp + (1 - s.dtc/100) * s.pvp * 0.55;
+                const netRev = pairs * blended * 0.85;
+                const cogs = pairs * costPerPair;
+                const ebitda = netRev - cogs - netRev * (s.opex/100);
+                const val = ebitda * s.mult;
+                ebitdas.push(Math.max(ebitda, 0));
+                valuations.push(Math.max(val, 0));
+            });
+            return { ebitdas, valuations };
+        }
+
+        function updateValuationCharts(revenues, ebitdas, cumFlows) {
+            if (valRevChart) {
+                valRevChart.data.datasets[0].data = revenues;
+                valRevChart.data.datasets[1].data = ebitdas;
+                valRevChart.update();
+            }
+            if (valCumChart) {
+                valCumChart.data.datasets[0].data = cumFlows;
+                valCumChart.update();
+            }
+            if (valCompChart) {
+                const comp = computeAllScenariosValuation();
+                valCompChart.data.datasets[0].data = comp.ebitdas;
+                valCompChart.data.datasets[1].data = comp.valuations;
+                valCompChart.update();
+            }
+        }
+
     </script>
 </body>
 </html>
