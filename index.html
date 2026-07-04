@@ -100,6 +100,39 @@
             color: var(--accent-primary);
         }
 
+        .lang-switch {
+            display: flex;
+            gap: 0.3rem;
+            margin-left: 0.8rem;
+            padding-left: 0.8rem;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.5px;
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .lang-btn.active {
+            background: rgba(0, 242, 254, 0.12);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
         .container {
             max-width: 1400px;
             margin: 2rem auto;
@@ -817,9 +850,112 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Indicador "guardado en este navegador" */
+        #save-indicator {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: rgba(0, 230, 118, 0.12);
+            border: 1px solid rgba(0, 230, 118, 0.35);
+            color: var(--success-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            z-index: 200;
+            backdrop-filter: blur(8px);
+        }
+        #save-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Aviso de simulación restaurada */
+        #restore-banner {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            background: rgba(0, 242, 254, 0.06);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 12px;
+            padding: 0.9rem 1.3rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        #restore-banner strong { color: var(--text-primary); }
+        .btn-reset-sim {
+            background: transparent;
+            border: 1px solid rgba(255, 0, 127, 0.35);
+            color: rgba(255, 0, 127, 0.9);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .btn-reset-sim:hover {
+            background: rgba(255, 0, 127, 0.1);
+        }
+
+        /* Botones de acción (PDF, reset) */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            color: var(--accent-primary);
+            padding: 0.7rem 1.3rem;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-action:hover {
+            background: rgba(0, 242, 254, 0.16);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+        }
+
+        /* Resumen para PDF — oculto en pantalla, visible solo al imprimir */
+        #pdf-summary { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #pdf-summary, #pdf-summary * { visibility: visible; }
+            #pdf-summary {
+                display: block;
+                position: absolute;
+                top: 0; left: 0;
+                width: 100%;
+                background: #ffffff;
+                color: #1a1a1a;
+                padding: 1.5cm;
+                font-family: 'Inter', Arial, sans-serif;
+            }
+            #pdf-summary h1 { font-family: 'Outfit', Arial, sans-serif; font-size: 22pt; color: #0d0f12; margin-bottom: 0.2cm; }
+            #pdf-summary h2 { font-family: 'Outfit', Arial, sans-serif; font-size: 14pt; color: #0d0f12; margin: 0.7cm 0 0.3cm; border-bottom: 2px solid #00b8c4; padding-bottom: 0.15cm; }
+            #pdf-summary p { font-size: 10.5pt; line-height: 1.55; margin-bottom: 0.35cm; color: #333; }
+            #pdf-summary .pdf-kpis { display: flex; flex-wrap: wrap; gap: 0.4cm; margin: 0.4cm 0; }
+            #pdf-summary .pdf-kpi { border: 1px solid #ddd; border-radius: 8px; padding: 0.35cm 0.5cm; min-width: 3.8cm; }
+            #pdf-summary .pdf-kpi span { display: block; font-size: 8.5pt; color: #777; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.1cm; }
+            #pdf-summary .pdf-kpi strong { font-size: 15pt; color: #0d0f12; }
+            #pdf-summary .pdf-note { font-size: 9pt; color: #888; border-top: 1px solid #ddd; padding-top: 0.3cm; margin-top: 0.8cm; }
+        }
     </style>
 </head>
 <body>
+
+    <div id="save-indicator" data-i18n="save_indicator">✓ Cambios guardados en este navegador</div>
 
     <!-- Header Section -->
     <header>
@@ -829,10 +965,15 @@
             <span style="font-size: 0.85rem; color: var(--text-secondary)">By Tolito</span>
         </div>
         <div class="nav-links">
-            <a href="#simulator" class="nav-link active">Simulador de ROI</a>
-            <a href="#valoracion" class="nav-link">Valoración Empresa</a>
-            <a href="#tech" class="nav-link">Especificaciones</a>
-            <a href="#sizing" class="nav-link">Distribución de Tallas</a>
+            <a href="#simulator" class="nav-link active" data-i18n="nav_simulator">Simulador de ROI</a>
+            <a href="#valoracion" class="nav-link" data-i18n="nav_valuation">Valoración Empresa</a>
+            <a href="#tech" class="nav-link" data-i18n="nav_specs">Especificaciones</a>
+            <a href="#sizing" class="nav-link" data-i18n="nav_sizing">Distribución de Tallas</a>
+            <div class="lang-switch" id="lang-switch">
+                <button class="lang-btn" data-lang="es" onclick="applyLanguage('es')" title="Español">ES</button>
+                <button class="lang-btn" data-lang="en" onclick="applyLanguage('en')" title="English">EN</button>
+                <button class="lang-btn" data-lang="it" onclick="applyLanguage('it')" title="Italiano">IT</button>
+            </div>
         </div>
     </header>
 
@@ -841,36 +982,52 @@
         <!-- Hero Banner -->
         <div class="hero-banner">
             <div class="hero-text">
-                <p class="hero-subtitle">Estrategia de Producción 100% Exclusiva — Moldes Propios</p>
-                <h1 class="hero-title">Simulador de Inversión & Retorno Hirostar T1 Pro</h1>
-                <p class="hero-desc">Simulador comercial de alta precisión para el modelo de negocio de Hirostar: zapatillas de pádel de alto rendimiento fabricadas con moldes 100% propios en China. Proyecta tu retorno bajo dos escenarios de venta: canal directo (DTC + Consignación en Clubes) o canal distribuidor.</p>
+                <p class="hero-subtitle" data-i18n="hero_subtitle">Estrategia de Producción 100% Exclusiva — Moldes Propios</p>
+                <h1 class="hero-title" data-i18n="hero_title">Simulador de Inversión & Retorno Hirostar T1 Pro</h1>
+                <p class="hero-desc" data-i18n="hero_desc">Simulador comercial de alta precisión para el modelo de negocio de Hirostar: zapatillas de pádel de alto rendimiento fabricadas con moldes 100% propios en China. Proyecta tu retorno bajo dos escenarios de venta: canal directo (DTC + Consignación en Clubes) o canal distribuidor.</p>
             </div>
+        </div>
+
+        <!-- Aviso: se restauró una simulación guardada en este navegador -->
+        <div id="restore-banner">
+            <span data-i18n="restore_banner_text">💾 Restauramos <strong>tu última simulación guardada</strong> en este navegador. Los cambios que hagas se guardan automáticamente.</span>
+            <button class="btn-reset-sim" onclick="resetSimulation()" data-i18n="btn_reset_sim">Restablecer valores originales</button>
+        </div>
+
+        <!-- Acciones: descargar PDF explicativo / resetear -->
+        <div style="display:flex; flex-wrap:wrap; gap:0.8rem; margin-bottom:1.5rem;">
+            <button class="btn-action" onclick="downloadPdfSummary()" data-i18n="btn_pdf">
+                📄 Descargar PDF
+            </button>
+            <button class="btn-action" style="border-color: rgba(255,0,127,0.3); color: rgba(255,0,127,0.9);" onclick="resetSimulation()" data-i18n="btn_reset_action">
+                🔄 Restablecer valores originales
+            </button>
         </div>
 
         <!-- KPI Grid -->
         <div class="kpi-grid">
             <div class="kpi-card">
-                <p class="kpi-label">Inversión Requerida</p>
+                <p class="kpi-label" data-i18n="kpi_investment_label">Inversión Requerida</p>
                 <h3 class="kpi-value" id="kpi-investment">$56,600</h3>
                 <p class="kpi-trend positive" id="kpi-investment-sub">Landed Cost Inicial</p>
             </div>
             <div class="kpi-card">
-                <p class="kpi-label">Costo por Par (Landed)</p>
+                <p class="kpi-label" data-i18n="kpi_unitcost_label">Costo por Par (Landed)</p>
                 <h3 class="kpi-value" id="kpi-unit-cost">$56.60</h3>
                 <p class="kpi-trend" id="kpi-unit-cost-sub">Todo incluido puesto en bodega</p>
             </div>
             <div class="kpi-card">
-                <p class="kpi-label">Retorno Neto Proyectado</p>
+                <p class="kpi-label" data-i18n="kpi_profit_label">Retorno Neto Proyectado</p>
                 <h3 class="kpi-value" id="kpi-profit">$44,000</h3>
-                <p class="kpi-trend positive" id="kpi-profit-sub">Ganancia en canales activos</p>
+                <p class="kpi-trend positive" id="kpi-profit-sub" data-i18n="kpi_profit_sub">Ganancia en canales activos</p>
             </div>
             <div class="kpi-card">
-                <p class="kpi-label">Retorno de Inversión (ROI)</p>
+                <p class="kpi-label" data-i18n="kpi_roi_label">Retorno de Inversión (ROI)</p>
                 <h3 class="kpi-value" id="kpi-roi" style="background: linear-gradient(135deg, var(--success-color) 0%, var(--accent-primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">77.7%</h3>
                 <p class="kpi-trend positive" id="kpi-roi-sub">Equivale a $44,000 de retorno neto</p>
             </div>
             <div class="kpi-card" style="border-color: rgba(255, 0, 127, 0.2); background: rgba(255,0,127,0.03);">
-                <p class="kpi-label" style="color: rgba(255,0,127,0.8);">Punto de Equilibrio</p>
+                <p class="kpi-label" style="color: rgba(255,0,127,0.8);" data-i18n="kpi_breakeven_label">Punto de Equilibrio</p>
                 <h3 class="kpi-value" id="kpi-breakeven" style="background: linear-gradient(135deg, #ff007f 0%, #ff6b9d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">563</h3>
                 <p class="kpi-trend" id="kpi-breakeven-sub" style="color: rgba(255,0,127,0.7);">Pares para recuperar inversión</p>
             </div>
@@ -881,26 +1038,26 @@
             
             <!-- Controls panel (Left) -->
             <div class="card">
-                <h3 class="card-title">Configuración del Pedido <span style="font-size:0.75rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;">— Moldes 100% Exclusivos</span></h3>
+                <h3 class="card-title"><span data-i18n="control_title">Configuración del Pedido</span> <span style="font-size:0.75rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;" data-i18n="control_title_sub">— Moldes 100% Exclusivos</span></h3>
 
                 <!-- Quantity Slider -->
                 <div class="control-group">
                     <div class="control-label">
-                        <span>Cantidad a Fabricar (Pares)</span>
+                        <span data-i18n="qty_label">Cantidad a Fabricar (Pares)</span>
                         <span class="value-bubble" id="val-qty">1,000</span>
                     </div>
                     <input type="range" id="range-qty" min="1000" max="4000" step="500" value="1000" oninput="calculate()">
                     <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">
-                        <span>1,000 (Mínimo)</span>
-                        <span>3,000 (Contenedor 20ft)</span>
-                        <span>4,000 (Máximo)</span>
+                        <span data-i18n="qty_hint_min">1,000 (Mínimo)</span>
+                        <span data-i18n="qty_hint_container">3,000 (Contenedor 20ft)</span>
+                        <span data-i18n="qty_hint_max">4,000 (Máximo)</span>
                     </div>
                 </div>
 
                 <!-- Price Slider -->
                 <div class="control-group">
                     <div class="control-label">
-                        <span id="pvp-label">Precio de Venta al Público (PVP)</span>
+                        <span id="pvp-label" data-i18n="pvp_label_distrib">Precio de Venta al Público (PVP)</span>
                         <span class="value-bubble" id="val-pvp">$130</span>
                     </div>
                     <input type="range" id="range-pvp" min="100" max="180" step="10" value="130" oninput="calculate()">
@@ -909,8 +1066,8 @@
                 <!-- Sales Mix Toggle -->
                 <label class="toggle-row" id="salesmix-toggle-row" onclick="toggleSalesMix()">
                     <div class="toggle-label-text">
-                        <strong>Mix de Ventas — Canal Directo</strong>
-                        <span id="salesmix-desc">DTC Online + Consignación en Clubes</span>
+                        <strong data-i18n="salesmix_title_distrib">Mix de Ventas — Canal Directo</strong>
+                        <span id="salesmix-desc" data-i18n="salesmix_desc_distrib">DTC Online + Consignación en Clubes</span>
                     </div>
                     <div class="toggle-switch" onclick="event.stopPropagation()">
                         <input type="checkbox" id="toggle-salesmix" onchange="toggleSalesMix()">
@@ -921,34 +1078,34 @@
                 <!-- Channel Split Slider (only visible when sales mix is ON) -->
                 <div class="control-group" id="group-split" style="opacity:0.3; pointer-events:none;">
                     <div class="control-label">
-                        <span>% Venta Directa (E-Commerce DTC)</span>
+                        <span data-i18n="split_label">% Venta Directa (E-Commerce DTC)</span>
                         <span class="value-bubble" id="val-split">40%</span>
                     </div>
                     <input type="range" id="range-split" min="10" max="90" step="10" value="40" oninput="calculate()">
                     <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">
-                        <span>← Más Consignación Clubs</span>
-                        <span>Más E-Commerce →</span>
+                        <span data-i18n="split_hint_left">← Más Consignación Clubs</span>
+                        <span data-i18n="split_hint_right">Más E-Commerce →</span>
                     </div>
                 </div>
 
                 <!-- Consignment Commission Slider (only active when sales mix is ON) -->
                 <div class="control-group" id="group-comm" style="opacity:0.3; pointer-events:none;">
                     <div class="control-label">
-                        <span>Comisión del Club de Pádel</span>
+                        <span data-i18n="comm_label">Comisión del Club de Pádel</span>
                         <span class="value-bubble" id="val-comm">30%</span>
                     </div>
                     <input type="range" id="range-comm" min="15" max="45" step="5" value="30" oninput="calculate()">
                     <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">
-                        <span>Menos Margen Club</span>
-                        <span>Más Margen Club</span>
+                        <span data-i18n="comm_hint_left">Menos Margen Club</span>
+                        <span data-i18n="comm_hint_right">Más Margen Club</span>
                     </div>
                 </div>
 
                 <!-- Logistics Toggle -->
                 <label class="toggle-row" id="logistics-toggle-row" onclick="toggleLogistics()">
                     <div class="toggle-label-text">
-                        <strong>Costos Logísticos</strong>
-                        Flete + Aranceles de Importación
+                        <strong data-i18n="logistics_title">Costos Logísticos</strong>
+                        <span data-i18n="logistics_desc">Flete + Aranceles de Importación</span>
                     </div>
                     <div class="toggle-switch" onclick="event.stopPropagation()">
                         <input type="checkbox" id="toggle-logistics" onchange="toggleLogistics()">
@@ -959,31 +1116,31 @@
                 <!-- Detailed Costs Rows -->
                 <div class="financial-breakdown">
                     <div class="breakdown-row">
-                        <span>Costo Unitario de Fábrica (FOB):</span>
+                        <span data-i18n="bd_fob">Costo Unitario de Fábrica (FOB):</span>
                         <span class="breakdown-value" id="breakdown-fob">$34.00</span>
                     </div>
                     <div class="breakdown-row">
-                        <span>Amortización de Moldes por Par:</span>
+                        <span data-i18n="bd_mold">Amortización de Moldes por Par:</span>
                         <span class="breakdown-value" id="breakdown-mold">$9.00</span>
                     </div>
                     <div class="breakdown-row" id="row-shipping">
-                        <span>Logística y Flete por Par:</span>
+                        <span data-i18n="bd_shipping">Logística y Flete por Par:</span>
                         <span class="breakdown-value" id="breakdown-shipping">$3.50</span>
                     </div>
                     <div class="breakdown-row" id="row-tariffs">
-                        <span>Aranceles e Importación (Est.):</span>
+                        <span data-i18n="bd_tariffs">Aranceles e Importación (Est.):</span>
                         <span class="breakdown-value" id="breakdown-tariffs">$10.10</span>
                     </div>
                     <div class="breakdown-row total">
-                        <span>Landed Cost Total Unitario:</span>
+                        <span data-i18n="bd_landed">Landed Cost Total Unitario:</span>
                         <span class="breakdown-value" id="breakdown-landed">$56.60</span>
                     </div>
                     <div class="breakdown-row" id="row-brand-fee" style="margin-top:0.6rem; border-top: 1px dashed rgba(255,0,127,0.2); padding-top:0.8rem;">
-                        <span style="color:rgba(255,0,127,0.85);">Fee a la Marca (15% del ingreso):</span>
+                        <span style="color:rgba(255,0,127,0.85);" data-i18n="bd_brandfee">Fee a la Marca (15% del ingreso):</span>
                         <span class="breakdown-value" id="breakdown-brand-fee" style="color:rgba(255,0,127,0.9);">−$19.50</span>
                     </div>
                     <div class="breakdown-row" style="font-size:0.8rem; color: var(--text-secondary); margin-top:0.3rem;">
-                        <span>Ingreso Neto tras Fee de Marca:</span>
+                        <span data-i18n="bd_netafterfee">Ingreso Neto tras Fee de Marca:</span>
                         <span class="breakdown-value" id="breakdown-net-after-fee" style="color:var(--success-color);">$110.50</span>
                     </div>
                 </div>
@@ -991,7 +1148,7 @@
 
             <!-- Charts Panel (Right) -->
             <div class="card" style="display: flex; flex-direction: column;">
-                <h3 class="card-title">Rendimiento Financiero y Proyección</h3>
+                <h3 class="card-title" data-i18n="charts_title">Rendimiento Financiero y Proyección</h3>
                 <div class="charts-container">
                     <!-- Cost Breakdown chart -->
                     <div class="chart-box">
@@ -1023,8 +1180,8 @@
         <div class="cost-section" id="costos">
             <div class="card">
                 <h3 class="card-title">
-                    Tabla Tecnica del Escenario
-                    <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;">Refleja la tabla interactiva y permite editar los supuestos de costo</span>
+                    <span data-i18n="tech_table_title">Tabla Tecnica del Escenario</span>
+                    <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;" data-i18n="tech_table_subtitle">Refleja la tabla interactiva y permite editar los supuestos de costo</span>
                 </h3>
 
                 <div class="scenario-sync-bar">
@@ -1147,163 +1304,24 @@
                             </table>
                         </div>
 
+                        <div class="cost-table-wrapper" style="margin-top:1.2rem;">
+                            <table class="cost-table">
+                                <thead>
+                                    <tr><th>Ingreso — Canal Directo (DTC)</th><th>Editable</th><th>Impacto / par</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="row-retail-fee-tech"><td>Pasarela de pago + envio local (fijo por par)</td><td><input type="number" class="cost-input" id="tech-retail-fee" value="15" min="0" step="1" oninput="calculate()"></td><td class="calculated-cell" id="scenario-retail-fee">$15.00/par</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="technical-note" style="margin-top:0.5rem;">
+                            Este valor se resta del PVP cuando el par se vende por canal directo (DTC online), tanto en el Simulador de ROI como en Valoracion de Empresa. Ajustalo si tu costo real de pasarela + envio cambia.
+                        </p>
+
                         <p class="technical-note">
                             El descuento por volumen de la tabla interactiva se aplica sobre cada item unitario. Los moldes y desarrollo se ven como inversion fija, pero tambien se traducen a costo por par segun el lote seleccionado.
                         </p>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="cost-section" id="costos-old" style="display:none;">
-            <div class="card">
-                <h3 class="card-title">
-                    Estructura de Costos de Desarrollo
-                    <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;">Edita los valores — el simulador se actualiza automáticamente</span>
-                </h3>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-
-                    <!-- COSTOS FIJOS (Inversión única) -->
-                    <div>
-                        <p style="font-size:0.78rem; color:var(--accent-primary); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.8rem;">Costos Fijos — Inversión Inicial Única</p>
-                        <div class="cost-table-wrapper">
-                            <table class="cost-table" id="fixed-cost-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width:55%">Concepto</th>
-                                        <th style="width:30%">Valor (USD)</th>
-                                        <th style="width:15%"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="fixed-cost-body">
-                                    <tr data-id="disenio">
-                                        <td>
-                                            Diseño del Calzado
-                                            <span class="cost-badge badge-editable">editable</span>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="cost-input fixed-cost-input" id="cost-disenio"
-                                                value="3000" min="0" step="100" oninput="recalcFixedTotal()">
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                    <tr data-id="horma">
-                                        <td>
-                                            Horma Propia (HP-02)
-                                            <span class="cost-badge badge-editable">editable</span>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="cost-input fixed-cost-input" id="cost-horma"
-                                                value="3500" min="0" step="100" oninput="recalcFixedTotal()">
-                                        </td>
-                                        <td><button class="del-btn" onclick="deleteFixedRow(this)" title="Eliminar fila">✕</button></td>
-                                    </tr>
-                                    <tr data-id="moldes-suela">
-                                        <td>
-                                            Moldes Tecnicos 100% Exclusivos (6 tallas)
-                                            <span class="cost-badge badge-editable">editable</span>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="cost-input fixed-cost-input" id="cost-moldes-suela"
-                                                value="34200" min="0" step="100" oninput="recalcFixedTotal()">
-                                        </td>
-                                        <td><button class="del-btn" onclick="deleteFixedRow(this)" title="Eliminar fila">✕</button></td>
-                                    </tr>
-                                    <tr data-id="moldes-lockframe">
-                                        <td>
-                                            Prototipo / Salesman Sample
-                                            <span class="cost-badge badge-editable">editable</span>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="cost-input fixed-cost-input" id="cost-moldes-lockframe"
-                                                value="0" min="0" step="100" oninput="recalcFixedTotal()">
-                                        </td>
-                                        <td><button class="del-btn" onclick="deleteFixedRow(this)" title="Eliminar fila">✕</button></td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr class="cost-total-row">
-                                        <td>Total Inversión Fija</td>
-                                        <td colspan="2"><span class="cost-total-val" id="fixed-cost-total">$48,700</span></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <button class="add-row-btn" onclick="addFixedRow()">＋ Agregar concepto fijo</button>
-                    </div>
-
-                    <!-- COSTOS VARIABLES (por par) -->
-                    <div>
-                        <p style="font-size:0.78rem; color:rgba(255,0,127,0.8); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.8rem;">Costos Variables — Por Par Producido</p>
-                        <div class="cost-table-wrapper">
-                            <table class="cost-table" id="var-cost-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width:55%">Concepto</th>
-                                        <th style="width:30%">Costo/Par (USD)</th>
-                                        <th style="width:15%"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="var-cost-body">
-                                    <tr data-id="fob">
-                                        <td>
-                                            FOB Fábrica (materiales + MO)
-                                            <span class="cost-badge badge-var">variable</span>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="cost-input var-cost-input" id="vcost-fob"
-                                                value="32.50" min="0" step="0.5" oninput="recalcVarTotal()">
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                    <tr data-id="empaque">
-                                        <td>
-                                            Empaque + Caja Premium
-                                            <span class="cost-badge badge-var">variable</span>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="cost-input var-cost-input" id="vcost-empaque"
-                                                value="3.50" min="0" step="0.5" oninput="recalcVarTotal()">
-                                        </td>
-                                        <td><button class="del-btn" onclick="deleteVarRow(this)" title="Eliminar fila">✕</button></td>
-                                    </tr>
-                                    <tr data-id="qc">
-                                        <td>
-                                            Control de Calidad (QC)
-                                            <span class="cost-badge badge-var">variable</span>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="cost-input var-cost-input" id="vcost-qc"
-                                                value="2.00" min="0" step="0.5" oninput="recalcVarTotal()">
-                                        </td>
-                                        <td><button class="del-btn" onclick="deleteVarRow(this)" title="Eliminar fila">✕</button></td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr class="cost-total-row">
-                                        <td>Costo Variable Total / Par</td>
-                                        <td colspan="2"><span class="cost-total-val" id="var-cost-total">$38.00</span></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <button class="add-row-btn" onclick="addVarRow()">＋ Agregar concepto variable</button>
-
-                        <!-- Impact indicator -->
-                        <div style="margin-top:1.2rem; background:rgba(255,0,127,0.04); border:1px solid rgba(255,0,127,0.15); border-radius:12px; padding:1rem;">
-                            <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px;">Impacto en el Simulador</p>
-                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.4rem;">
-                                <span style="color:var(--text-secondary)">Inv. Fija Amortizada (1,000 pares):</span>
-                                <span id="impact-amort" style="color:var(--text-primary); font-weight:700;">$48.70/par</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
-                                <span style="color:var(--text-secondary)">Costo Total Est. / Par (1,000 pares):</span>
-                                <span id="impact-total-unit" style="color:var(--accent-primary); font-weight:700;">$86.70/par</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
@@ -1313,7 +1331,7 @@
             
             <!-- Tech Specs Card -->
             <div class="card" id="tech">
-                <h3 class="card-title">Especificaciones del T1 Pro "White Phantom"</h3>
+                <h3 class="card-title" data-i18n="card_specs_title">Especificaciones del T1 Pro "White Phantom"</h3>
                 <div class="tech-list">
                     <div class="tech-item">
                         <div class="tech-icon">LF</div>
@@ -1348,7 +1366,7 @@
 
             <!-- Sizing Chart Card -->
             <div class="card" id="sizing">
-                <h3 class="card-title">Distribución y Equivalencias de Tallas</h3>
+                <h3 class="card-title" data-i18n="card_sizing_title">Distribución y Equivalencias de Tallas</h3>
                 <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.4;">
                     Para producción, la fábrica utiliza horma europea (EU). Los picos de demanda difieren debido a las fisonomías regionales (Europa demanda tallas más grandes).
                 </p>
@@ -1450,23 +1468,23 @@
         <div id="valoracion" style="margin-bottom:2.5rem;">
             <div class="card">
                 <h3 class="card-title">
-                    Valoración de Empresa &amp; Proyección 5 Años
-                    <span style="font-size:0.8rem;font-weight:400;color:var(--text-secondary);font-family:'Inter',sans-serif;">Contrato exclusivo de maquila Hirostar · 46 países disponibles</span>
+                    <span data-i18n="card_valuation_title">Valoración de Empresa &amp; Proyección 5 Años</span>
+                    <span style="font-size:0.8rem;font-weight:400;color:var(--text-secondary);font-family:'Inter',sans-serif;" data-i18n="card_valuation_subtitle">Contrato exclusivo de maquila Hirostar · 46 países disponibles</span>
                 </h3>
 
                 <!-- Scenario Tabs -->
                 <div style="display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap;">
                     <button class="scen-tab active" id="tab-modesto" onclick="setScenario('modesto')">
-                        <span style="font-size:1.1rem;">🟡</span> Modesto
-                        <small>3 países · ~15k pares/año</small>
+                        <span style="font-size:1.1rem;">🟡</span> <span data-i18n="scenario_modesto_name">Modesto</span>
+                        <small data-i18n="tab_modesto_small">3 países · ~15k pares/año</small>
                     </button>
                     <button class="scen-tab" id="tab-base" onclick="setScenario('base')">
-                        <span style="font-size:1.1rem;">🔵</span> Base
-                        <small>15 países · ~120k pares/año</small>
+                        <span style="font-size:1.1rem;">🔵</span> <span data-i18n="scenario_base_name">Base</span>
+                        <small data-i18n="tab_base_small">15 países · ~120k pares/año</small>
                     </button>
                     <button class="scen-tab" id="tab-ideal" onclick="setScenario('ideal')">
-                        <span style="font-size:1.1rem;">🟢</span> Ideal
-                        <small>46 países · ~690k pares/año</small>
+                        <span style="font-size:1.1rem;">🟢</span> <span data-i18n="scenario_ideal_name">Ideal</span>
+                        <small data-i18n="tab_ideal_small">46 países · ~690k pares/año</small>
                     </button>
                 </div>
 
@@ -1653,34 +1671,534 @@
     <!-- Footer -->
     <footer>
         <div class="footer-logo">HIROSTAR FOOTWEAR</div>
-        <p style="font-size: 0.75rem; margin-bottom: 0.5rem;">Proyección técnica y comercial - Maquila en China para Latam y Europa.</p>
-        <p style="font-size: 0.7rem; color: rgba(255,255,255,0.25);">© 2026 Hirostar Padel. Todos los derechos reservados.</p>
+        <p style="font-size: 0.75rem; margin-bottom: 0.5rem;" data-i18n="footer_line1">Proyección técnica y comercial - Maquila en China para Latam y Europa.</p>
+        <p style="font-size: 0.7rem; color: rgba(255,255,255,0.25);" data-i18n="footer_line2">© 2026 Hirostar Padel. Todos los derechos reservados.</p>
     </footer>
+
+    <!-- Resumen en lenguaje simple, solo visible al generar el PDF -->
+    <div id="pdf-summary"></div>
 
     <!-- Interactive Logic & Chart.js Initialization -->
     <script>
         let revenueChartObj = null;
+        let lastCalcState = {};       // último resultado del Simulador de ROI (para el PDF)
+        let lastValuationState = {};  // último resultado de Valoración (para el PDF)
+        // Mientras la página arranca, calculate()/calcValuation() se llaman varias
+        // veces con valores por defecto ANTES de intentar restaurar lo guardado.
+        // Si no lo evitamos, esos cálculos de arranque sobrescriben en localStorage
+        // la simulación real del visitante antes de poder leerla. Se libera al
+        // final de window.onload, una vez que la restauración ya terminó.
+        let suppressAutoSave = true;
+
+        // ─── Idiomas (ES / EN / IT) ─────────────────────────────────────────
+        // Cobertura de esta primera fase: todo el "Simulador de ROI" (lo que
+        // ve el cliente primero), navegación, banners, botones, KPIs y el PDF.
+        // Las tablas técnicas profundas (especificaciones, tallas, filas de
+        // costo individuales) quedan en español por ahora — es contenido de
+        // referencia muy extenso, se puede traducir en una siguiente fase.
+        const I18N = {
+            es: {
+                nav_simulator: 'Simulador de ROI', nav_valuation: 'Valoración Empresa', nav_specs: 'Especificaciones', nav_sizing: 'Distribución de Tallas',
+                hero_subtitle: 'Estrategia de Producción 100% Exclusiva — Moldes Propios',
+                hero_title: 'Simulador de Inversión & Retorno Hirostar T1 Pro',
+                hero_desc: 'Simulador comercial de alta precisión para el modelo de negocio de Hirostar: zapatillas de pádel de alto rendimiento fabricadas con moldes 100% propios en China. Proyecta tu retorno bajo dos escenarios de venta: canal directo (DTC + Consignación en Clubes) o canal distribuidor.',
+                restore_banner_text: '💾 Restauramos <strong>tu última simulación guardada</strong> en este navegador. Los cambios que hagas se guardan automáticamente.',
+                btn_reset_sim: 'Restablecer valores originales',
+                btn_pdf: '📄 Descargar PDF',
+                btn_reset_action: '🔄 Restablecer valores originales',
+                save_indicator: '✓ Cambios guardados en este navegador',
+                kpi_investment_label: 'Inversión Requerida', kpi_unitcost_label: 'Costo por Par (Landed)',
+                kpi_profit_label: 'Retorno Neto Proyectado', kpi_profit_sub: 'Ganancia en canales activos', kpi_roi_label: 'Retorno de Inversión (ROI)',
+                kpi_breakeven_label: 'Punto de Equilibrio',
+                control_title: 'Configuración del Pedido', control_title_sub: '— Moldes 100% Exclusivos',
+                qty_label: 'Cantidad a Fabricar (Pares)', qty_hint_min: '1,000 (Mínimo)', qty_hint_container: '3,000 (Contenedor 20ft)', qty_hint_max: '4,000 (Máximo)',
+                pvp_label_direct: 'Precio de Venta al Público (PVP)', pvp_label_distrib: 'Precio de Venta a Distribuidor (Mayorista)',
+                salesmix_title_direct: 'Mix de Ventas — Canal Directo', salesmix_title_distrib: 'Mix de Ventas — Canal Distribuidor',
+                salesmix_desc_direct: 'DTC Online + Consignación en Clubes', salesmix_desc_distrib: 'Precio directo a distribuidores (mayorista)',
+                split_label: '% Venta Directa (E-Commerce DTC)', split_hint_left: '← Más Consignación Clubs', split_hint_right: 'Más E-Commerce →',
+                comm_label: 'Comisión del Club de Pádel', comm_hint_left: 'Menos Margen Club', comm_hint_right: 'Más Margen Club',
+                logistics_title: 'Costos Logísticos', logistics_desc: 'Flete + Aranceles de Importación',
+                bd_fob: 'Costo Unitario de Fábrica (FOB):', bd_mold: 'Amortización de Moldes por Par:',
+                bd_shipping: 'Logística y Flete por Par:', bd_tariffs: 'Aranceles e Importación (Est.):',
+                bd_landed: 'Landed Cost Total Unitario:', bd_brandfee: 'Fee a la Marca (15% del ingreso):', bd_netafterfee: 'Ingreso Neto tras Fee de Marca:',
+                charts_title: 'Rendimiento Financiero y Proyección',
+                tech_table_title: 'Tabla Técnica del Escenario', tech_table_subtitle: 'Refleja la tabla interactiva y permite editar los supuestos de costo',
+                card_specs_title: 'Especificaciones del T1 Pro "White Phantom"',
+                card_sizing_title: 'Distribución y Equivalencias de Tallas',
+                card_valuation_title: 'Valoración de Empresa &amp; Proyección 5 Años', card_valuation_subtitle: 'Contrato exclusivo de maquila Hirostar · 46 países disponibles',
+                footer_line1: 'Proyección técnica y comercial - Maquila en China para Latam y Europa.',
+                footer_line2: '© 2026 Hirostar Padel. Todos los derechos reservados.',
+                chart_note_direct: '<strong style="color: var(--accent-primary);">Canal Directo activo:</strong> La mezcla DTC + Consignación retiene entre el 70–100% del PVP en ingresos netos. El margen de consignación siempre supera al precio de distribuidor, compensando el costo de mantener inventario en pista.',
+                chart_note_distrib: '<strong style="color: rgba(255,0,127,0.9);">Canal Distribuidor activo:</strong> El precio configurado es tu precio de venta al distribuidor. Ellos aplicarán su margen (típicamente 40–60%) para llegar al precio final al público. La comisión del club no aplica en este escenario.',
+                roi_sub_positive: 'Equivale a {amt} de retorno neto', roi_sub_negative: 'Equivale a {amt} de pérdida neta',
+                breakeven_sub: '{pct}% del lote ({qty} pares)',
+                no_logistics_tag: ' <span style="color:rgba(255,0,127,0.8); font-size:0.75rem">[Sin Logística]</span>',
+                kpi_investment_sub_fcl: '<span style="color:var(--accent-primary)">¡Lote de Contenedor FCL Completo!</span>', kpi_unitcost_sub_fcl: 'Máxima optimización de flete',
+                kpi_investment_sub_lcl: 'Carga LCL parcial', kpi_unitcost_sub_lcl: 'Costo puesto en bodega',
+                reset_confirm: 'Esto borra los ajustes guardados en este navegador y vuelve a los valores originales del simulador. ¿Continuar?',
+                pdf_h1: 'Hirostar T1 Pro — Resumen de Inversión',
+                pdf_generated_on: 'Generado el {fecha} · Documento explicativo, no requiere conocimientos financieros previos.',
+                pdf_h2_roi: 'Tu simulación de retorno de inversión',
+                pdf_final_note: 'Cifras proyectadas a partir de los supuestos configurados en el simulador interactivo de Hirostar. No constituyen garantía de resultados ni asesoría de inversión.',
+                pdf_no_data: 'Aún no hay una simulación calculada. Ajusta el simulador y vuelve a intentarlo.',
+                pdf_channel_direct: 'una mezcla de venta directa por internet y consignación en clubes de pádel', pdf_channel_distrib: 'venta a un distribuidor mayorista',
+                pdf_logistics_on: 'el flete internacional ({sh} por par) y los aranceles de importación ({ta} por par)', pdf_logistics_off: 'sin contar flete ni aranceles, porque están desactivados en el simulador',
+                pdf_roi_positive: 'Por cada $100 que inviertas, recuperas esos $100 y además ganas ${amt} adicionales.',
+                pdf_roi_negative: 'Con estos números, hoy perderías ${amt} por cada $100 invertidos. Conviene ajustar el precio de venta o el volumen antes de avanzar.',
+                pdf_q_what: '¿Qué estás evaluando?', pdf_evaluating: 'Fabricar <strong>{qty} pares</strong> del modelo Hirostar T1 Pro, vendidos mediante {channel}.',
+                pdf_kpi_investment: 'Inversión total necesaria', pdf_kpi_unitcost: 'Costo por par (todo incluido)', pdf_kpi_profit: 'Ganancia neta proyectada', pdf_kpi_roi: 'Retorno de inversión (ROI)',
+                pdf_q_cost: '¿De dónde sale el costo de ${cost} por par?', pdf_cost_explain: 'Es la suma de: fabricar el zapato en la fábrica en China (${fob}), la parte que te toca pagar de los moldes propios repartida entre todos los pares del lote (${mold}), y {logistics}.',
+                pdf_q_roi: '¿Qué significa un ROI de {roi}%?',
+                pdf_q_breakeven: '¿Cuándo recuperas lo invertido?', pdf_breakeven_explain: 'Necesitas vender <strong>{pairs} pares</strong> (el {pct}% del lote de {qty}) para cubrir toda la inversión inicial. Cada par que vendas después de ese punto es ganancia neta.',
+                pdf_valuation_title: 'Proyección de crecimiento a 5 años — Escenario "{name}"',
+                pdf_valuation_body: 'En el año 5, con presencia en <strong>{countries} país{plural}</strong> y vendiendo <strong>{pairs} pares al año</strong>, el negocio generaría un ingreso neto de <strong>{netRev}</strong> y una ganancia operativa (EBITDA) de <strong>{ebitda}</strong> — es decir, de cada $100 que entran, quedan libres ${margin} después de pagar fábrica, logística, moldes y gastos de operación.',
+                pdf_valuation_multiple: 'Aplicando un múltiplo estándar de <strong>{mult}×</strong> sobre esa ganancia (la forma habitual de valorar una empresa de manufactura), Hirostar podría valer aproximadamente <strong>{val}</strong> en el año 5 bajo este panorama.',
+                pdf_valuation_note: 'Esta proyección depende de supuestos configurables (países, precio, mezcla de canales, gastos). No es una garantía de resultados, es una guía de planeación.',
+                scenario_modesto_name: 'Modesto', scenario_modesto_desc: 'Solo Colombia activo. Crecimiento orgánico conservador. Contrato honrado con 1-3 países en 5 años. Base real y alcanzable.',
+                scenario_base_name: 'Base', scenario_base_desc: 'Expansión moderada a 15 países en 5 años. Hirostar activa representantes en Latinoamérica y parte de Europa. Canal mixto con creciente DTC.',
+                scenario_ideal_name: 'Ideal', scenario_ideal_desc: 'Activación acelerada de los 46 países. Hirostar usa su red global existente. Canal directo dominante, altos márgenes y valoración premium.',
+                tab_modesto_small: '3 países · ~15k pares/año', tab_base_small: '15 países · ~120k pares/año', tab_ideal_small: '46 países · ~690k pares/año'
+            },
+            en: {
+                nav_simulator: 'ROI Simulator', nav_valuation: 'Company Valuation', nav_specs: 'Specifications', nav_sizing: 'Size Distribution',
+                hero_subtitle: '100% Exclusive Production Strategy — Proprietary Molds',
+                hero_title: 'Hirostar T1 Pro Investment & Return Simulator',
+                hero_desc: 'High-precision commercial simulator for the Hirostar business model: high-performance padel shoes manufactured with 100% proprietary molds in China. Project your return under two sales scenarios: direct channel (DTC + Club Consignment) or distributor channel.',
+                restore_banner_text: '💾 We restored <strong>your last saved simulation</strong> in this browser. Any changes you make are saved automatically.',
+                btn_reset_sim: 'Reset to original values',
+                btn_pdf: '📄 Download PDF',
+                btn_reset_action: '🔄 Reset to original values',
+                save_indicator: '✓ Changes saved in this browser',
+                kpi_investment_label: 'Required Investment', kpi_unitcost_label: 'Cost per Pair (Landed)',
+                kpi_profit_label: 'Projected Net Return', kpi_profit_sub: 'Profit across active channels', kpi_roi_label: 'Return on Investment (ROI)',
+                kpi_breakeven_label: 'Break-Even Point',
+                control_title: 'Order Configuration', control_title_sub: '— 100% Exclusive Molds',
+                qty_label: 'Quantity to Manufacture (Pairs)', qty_hint_min: '1,000 (Minimum)', qty_hint_container: '3,000 (20ft Container)', qty_hint_max: '4,000 (Maximum)',
+                pvp_label_direct: 'Retail Price (RRP)', pvp_label_distrib: 'Distributor (Wholesale) Price',
+                salesmix_title_direct: 'Sales Mix — Direct Channel', salesmix_title_distrib: 'Sales Mix — Distributor Channel',
+                salesmix_desc_direct: 'Online DTC + Club Consignment', salesmix_desc_distrib: 'Direct price to distributors (wholesale)',
+                split_label: '% Direct Sales (DTC E-Commerce)', split_hint_left: '← More Club Consignment', split_hint_right: 'More E-Commerce →',
+                comm_label: 'Padel Club Commission', comm_hint_left: 'Less Club Margin', comm_hint_right: 'More Club Margin',
+                logistics_title: 'Logistics Costs', logistics_desc: 'Freight + Import Duties',
+                bd_fob: 'Factory Unit Cost (FOB):', bd_mold: 'Mold Amortization per Pair:',
+                bd_shipping: 'Logistics & Freight per Pair:', bd_tariffs: 'Duties & Import (Est.):',
+                bd_landed: 'Total Unit Landed Cost:', bd_brandfee: 'Brand Fee (15% of revenue):', bd_netafterfee: 'Net Revenue after Brand Fee:',
+                charts_title: 'Financial Performance & Projection',
+                tech_table_title: 'Scenario Technical Table', tech_table_subtitle: 'Mirrors the interactive table and lets you edit cost assumptions',
+                card_specs_title: 'T1 Pro "White Phantom" Specifications',
+                card_sizing_title: 'Size Distribution & Equivalences',
+                card_valuation_title: 'Company Valuation &amp; 5-Year Projection', card_valuation_subtitle: 'Exclusive Hirostar manufacturing contract · 46 countries available',
+                footer_line1: 'Technical and commercial projection - Manufacturing in China for Latam and Europe.',
+                footer_line2: '© 2026 Hirostar Padel. All rights reserved.',
+                chart_note_direct: '<strong style="color: var(--accent-primary);">Direct Channel active:</strong> The DTC + Consignment mix retains between 70–100% of RRP as net revenue. Consignment margin always beats distributor pricing, offsetting the cost of holding inventory on court.',
+                chart_note_distrib: '<strong style="color: rgba(255,0,127,0.9);">Distributor Channel active:</strong> The configured price is your distributor selling price. They will apply their own margin (typically 40–60%) to reach the final retail price. Club commission does not apply in this scenario.',
+                roi_sub_positive: 'Equivalent to {amt} net return', roi_sub_negative: 'Equivalent to {amt} net loss',
+                breakeven_sub: '{pct}% of the batch ({qty} pairs)',
+                no_logistics_tag: ' <span style="color:rgba(255,0,127,0.8); font-size:0.75rem">[No Logistics]</span>',
+                kpi_investment_sub_fcl: '<span style="color:var(--accent-primary)">Full FCL Container Batch!</span>', kpi_unitcost_sub_fcl: 'Maximum freight optimization',
+                kpi_investment_sub_lcl: 'Partial LCL shipment', kpi_unitcost_sub_lcl: 'Cost delivered to warehouse',
+                reset_confirm: 'This clears the settings saved in this browser and returns to the simulator\'s original values. Continue?',
+                pdf_h1: 'Hirostar T1 Pro — Investment Summary',
+                pdf_generated_on: 'Generated on {fecha} · Explanatory document, no prior financial knowledge required.',
+                pdf_h2_roi: 'Your investment return simulation',
+                pdf_final_note: 'Figures projected from the assumptions configured in the Hirostar interactive simulator. This does not constitute a guarantee of results or investment advice.',
+                pdf_no_data: 'There is no calculated simulation yet. Adjust the simulator and try again.',
+                pdf_channel_direct: 'a mix of direct online sales and consignment at padel clubs', pdf_channel_distrib: 'sales to a wholesale distributor',
+                pdf_logistics_on: 'international freight ({sh} per pair) and import duties ({ta} per pair)', pdf_logistics_off: 'not counting freight or duties, since they are disabled in the simulator',
+                pdf_roi_positive: 'For every $100 you invest, you recover that $100 plus an extra ${amt} in profit.',
+                pdf_roi_negative: 'With these numbers, you would currently lose ${amt} for every $100 invested. Consider adjusting the selling price or volume before moving forward.',
+                pdf_q_what: 'What are you evaluating?', pdf_evaluating: 'Manufacturing <strong>{qty} pairs</strong> of the Hirostar T1 Pro model, sold through {channel}.',
+                pdf_kpi_investment: 'Total investment required', pdf_kpi_unitcost: 'Cost per pair (all-in)', pdf_kpi_profit: 'Projected net profit', pdf_kpi_roi: 'Return on investment (ROI)',
+                pdf_q_cost: 'Where does the ${cost} cost per pair come from?', pdf_cost_explain: 'It is the sum of: manufacturing the shoe at the factory in China (${fob}), your share of the proprietary molds spread across the whole batch (${mold}), and {logistics}.',
+                pdf_q_roi: 'What does an ROI of {roi}% mean?',
+                pdf_q_breakeven: 'When do you recover your investment?', pdf_breakeven_explain: 'You need to sell <strong>{pairs} pairs</strong> ({pct}% of the {qty}-pair batch) to cover the full initial investment. Every pair sold after that point is net profit.',
+                pdf_valuation_title: '5-year growth projection — "{name}" Scenario',
+                pdf_valuation_body: 'In year 5, with a presence in <strong>{countries} countr{plural}</strong> and selling <strong>{pairs} pairs per year</strong>, the business would generate net revenue of <strong>{netRev}</strong> and operating profit (EBITDA) of <strong>{ebitda}</strong> — meaning that for every $100 that comes in, ${margin} remains after paying for factory, logistics, molds and operating expenses.',
+                pdf_valuation_multiple: 'Applying a standard multiple of <strong>{mult}×</strong> to that profit (the usual way to value a manufacturing company), Hirostar could be worth approximately <strong>{val}</strong> in year 5 under this scenario.',
+                pdf_valuation_note: 'This projection depends on configurable assumptions (countries, price, channel mix, expenses). It is not a guarantee of results — it is a planning guide.',
+                scenario_modesto_name: 'Modest', scenario_modesto_desc: 'Colombia only. Conservative organic growth. Contract honored with 1-3 countries in 5 years. A realistic, achievable baseline.',
+                scenario_base_name: 'Base', scenario_base_desc: 'Moderate expansion to 15 countries in 5 years. Hirostar activates representatives across Latin America and part of Europe. Mixed channel with growing DTC.',
+                scenario_ideal_name: 'Ideal', scenario_ideal_desc: 'Accelerated activation across all 46 countries. Hirostar leverages its existing global network. Direct channel dominant, high margins and premium valuation.',
+                tab_modesto_small: '3 countries · ~15k pairs/year', tab_base_small: '15 countries · ~120k pairs/year', tab_ideal_small: '46 countries · ~690k pairs/year'
+            },
+            it: {
+                nav_simulator: 'Simulatore ROI', nav_valuation: 'Valutazione Azienda', nav_specs: 'Specifiche', nav_sizing: 'Distribuzione Taglie',
+                hero_subtitle: 'Strategia di Produzione 100% Esclusiva — Stampi Propri',
+                hero_title: 'Simulatore di Investimento e Rendimento Hirostar T1 Pro',
+                hero_desc: 'Simulatore commerciale ad alta precisione per il modello di business di Hirostar: scarpe da padel ad alte prestazioni prodotte con stampi 100% proprietari in Cina. Proietta il tuo rendimento in due scenari di vendita: canale diretto (DTC + Conto Deposito nei Club) o canale distributore.',
+                restore_banner_text: '💾 Abbiamo ripristinato <strong>la tua ultima simulazione salvata</strong> in questo browser. Le modifiche vengono salvate automaticamente.',
+                btn_reset_sim: 'Ripristina valori originali',
+                btn_pdf: '📄 Scarica PDF',
+                btn_reset_action: '🔄 Ripristina valori originali',
+                save_indicator: '✓ Modifiche salvate in questo browser',
+                kpi_investment_label: 'Investimento Richiesto', kpi_unitcost_label: 'Costo per Paio (Sdoganato)',
+                kpi_profit_label: 'Rendimento Netto Proiettato', kpi_profit_sub: 'Profitto nei canali attivi', kpi_roi_label: "Ritorno sull'Investimento (ROI)",
+                kpi_breakeven_label: 'Punto di Pareggio',
+                control_title: "Configurazione dell'Ordine", control_title_sub: '— Stampi 100% Esclusivi',
+                qty_label: 'Quantità da Produrre (Paia)', qty_hint_min: '1.000 (Minimo)', qty_hint_container: '3.000 (Container 20ft)', qty_hint_max: '4.000 (Massimo)',
+                pvp_label_direct: 'Prezzo al Pubblico (PVP)', pvp_label_distrib: 'Prezzo al Distributore (Ingrosso)',
+                salesmix_title_direct: 'Mix di Vendita — Canale Diretto', salesmix_title_distrib: 'Mix di Vendita — Canale Distributore',
+                salesmix_desc_direct: 'DTC Online + Conto Deposito nei Club', salesmix_desc_distrib: 'Prezzo diretto ai distributori (ingrosso)',
+                split_label: '% Vendita Diretta (E-Commerce DTC)', split_hint_left: '← Più Conto Deposito Club', split_hint_right: 'Più E-Commerce →',
+                comm_label: 'Commissione del Club di Padel', comm_hint_left: 'Meno Margine Club', comm_hint_right: 'Più Margine Club',
+                logistics_title: 'Costi Logistici', logistics_desc: 'Spedizione + Dazi Doganali',
+                bd_fob: 'Costo Unitario di Fabbrica (FOB):', bd_mold: 'Ammortamento Stampi per Paio:',
+                bd_shipping: 'Logistica e Spedizione per Paio:', bd_tariffs: 'Dazi e Importazione (Stim.):',
+                bd_landed: 'Costo Totale Unitario Sdoganato:', bd_brandfee: 'Fee del Brand (15% dei ricavi):', bd_netafterfee: 'Ricavo Netto dopo Fee del Brand:',
+                charts_title: 'Performance Finanziaria e Proiezione',
+                tech_table_title: 'Tabella Tecnica dello Scenario', tech_table_subtitle: "Rispecchia la tabella interattiva e permette di modificare le ipotesi di costo",
+                card_specs_title: 'Specifiche del T1 Pro "White Phantom"',
+                card_sizing_title: 'Distribuzione ed Equivalenze delle Taglie',
+                card_valuation_title: 'Valutazione Azienda &amp; Proiezione a 5 Anni', card_valuation_subtitle: 'Contratto esclusivo di produzione Hirostar · 46 paesi disponibili',
+                footer_line1: 'Proiezione tecnica e commerciale - Produzione in Cina per Latam ed Europa.',
+                footer_line2: '© 2026 Hirostar Padel. Tutti i diritti riservati.',
+                chart_note_direct: '<strong style="color: var(--accent-primary);">Canale Diretto attivo:</strong> Il mix DTC + Conto Deposito trattiene tra il 70–100% del PVP come ricavo netto. Il margine del conto deposito supera sempre il prezzo distributore, compensando il costo di tenere inventario nei club.',
+                chart_note_distrib: '<strong style="color: rgba(255,0,127,0.9);">Canale Distributore attivo:</strong> Il prezzo configurato è il tuo prezzo di vendita al distributore. Applicheranno il proprio margine (tipicamente 40–60%) per arrivare al prezzo finale al pubblico. La commissione del club non si applica in questo scenario.',
+                roi_sub_positive: 'Equivale a {amt} di rendimento netto', roi_sub_negative: 'Equivale a {amt} di perdita netta',
+                breakeven_sub: '{pct}% del lotto ({qty} paia)',
+                no_logistics_tag: ' <span style="color:rgba(255,0,127,0.8); font-size:0.75rem">[Senza Logistica]</span>',
+                kpi_investment_sub_fcl: '<span style="color:var(--accent-primary)">Lotto Container FCL Completo!</span>', kpi_unitcost_sub_fcl: 'Massima ottimizzazione della spedizione',
+                kpi_investment_sub_lcl: 'Carico LCL parziale', kpi_unitcost_sub_lcl: 'Costo consegnato in magazzino',
+                reset_confirm: 'Questo cancella le impostazioni salvate in questo browser e ripristina i valori originali del simulatore. Continuare?',
+                pdf_h1: 'Hirostar T1 Pro — Riepilogo Investimento',
+                pdf_generated_on: 'Generato il {fecha} · Documento esplicativo, non richiede conoscenze finanziarie pregresse.',
+                pdf_h2_roi: 'La tua simulazione di ritorno sull\'investimento',
+                pdf_final_note: 'Cifre proiettate in base alle ipotesi configurate nel simulatore interattivo Hirostar. Non costituiscono garanzia di risultati né consulenza finanziaria.',
+                pdf_no_data: 'Non c\'è ancora una simulazione calcolata. Regola il simulatore e riprova.',
+                pdf_channel_direct: 'un mix di vendita diretta online e conto deposito nei club di padel', pdf_channel_distrib: 'vendita a un distributore all\'ingrosso',
+                pdf_logistics_on: 'la spedizione internazionale ({sh} per paio) e i dazi doganali ({ta} per paio)', pdf_logistics_off: 'senza contare spedizione né dazi, perché disattivati nel simulatore',
+                pdf_roi_positive: 'Per ogni $100 investiti, recuperi quei $100 e guadagni altri ${amt}.',
+                pdf_roi_negative: 'Con questi numeri, oggi perderesti ${amt} per ogni $100 investiti. Conviene aggiustare il prezzo di vendita o il volume prima di procedere.',
+                pdf_q_what: 'Cosa stai valutando?', pdf_evaluating: 'Produrre <strong>{qty} paia</strong> del modello Hirostar T1 Pro, vendute tramite {channel}.',
+                pdf_kpi_investment: 'Investimento totale necessario', pdf_kpi_unitcost: 'Costo per paio (tutto incluso)', pdf_kpi_profit: 'Profitto netto proiettato', pdf_kpi_roi: "Ritorno sull'investimento (ROI)",
+                pdf_q_cost: 'Da dove viene il costo di ${cost} per paio?', pdf_cost_explain: 'È la somma di: produrre la scarpa in fabbrica in Cina (${fob}), la tua quota degli stampi propri ripartita su tutto il lotto (${mold}), e {logistics}.',
+                pdf_q_roi: 'Cosa significa un ROI del {roi}%?',
+                pdf_q_breakeven: 'Quando recuperi l\'investimento?', pdf_breakeven_explain: 'Devi vendere <strong>{pairs} paia</strong> (il {pct}% del lotto di {qty}) per coprire tutto l\'investimento iniziale. Ogni paio venduto dopo quel punto è profitto netto.',
+                pdf_valuation_title: 'Proiezione di crescita a 5 anni — Scenario "{name}"',
+                pdf_valuation_body: 'Nell\'anno 5, con presenza in <strong>{countries} paes{plural}</strong> e vendendo <strong>{pairs} paia all\'anno</strong>, l\'azienda genererebbe un ricavo netto di <strong>{netRev}</strong> e un utile operativo (EBITDA) di <strong>{ebitda}</strong> — cioè, di ogni $100 che entrano, ne restano ${margin} liberi dopo aver pagato fabbrica, logistica, stampi e spese operative.',
+                pdf_valuation_multiple: 'Applicando un multiplo standard di <strong>{mult}×</strong> su quell\'utile (il modo consueto di valutare un\'azienda manifatturiera), Hirostar potrebbe valere circa <strong>{val}</strong> nell\'anno 5 in questo scenario.',
+                pdf_valuation_note: 'Questa proiezione dipende da ipotesi configurabili (paesi, prezzo, mix di canali, spese). Non è una garanzia di risultati, è una guida di pianificazione.',
+                scenario_modesto_name: 'Modesto', scenario_modesto_desc: 'Solo Colombia attiva. Crescita organica conservativa. Contratto rispettato con 1-3 paesi in 5 anni. Base reale e raggiungibile.',
+                scenario_base_name: 'Base', scenario_base_desc: 'Espansione moderata a 15 paesi in 5 anni. Hirostar attiva rappresentanti in America Latina e parte d\'Europa. Canale misto con DTC crescente.',
+                scenario_ideal_name: 'Ideale', scenario_ideal_desc: 'Attivazione accelerata di tutti i 46 paesi. Hirostar sfrutta la sua rete globale esistente. Canale diretto dominante, margini alti e valutazione premium.',
+                tab_modesto_small: '3 paesi · ~15k paia/anno', tab_base_small: '15 paesi · ~120k paia/anno', tab_ideal_small: '46 paesi · ~690k paia/anno'
+            }
+        };
+
+        let currentLang = 'es';
+
+        function t(key, vars) {
+            let str = (I18N[currentLang] && I18N[currentLang][key] !== undefined) ? I18N[currentLang][key] : (I18N.es[key] || key);
+            if (vars) {
+                Object.keys(vars).forEach(k => { str = str.split('{' + k + '}').join(vars[k]); });
+            }
+            return str;
+        }
+
+        function detectBrowserLang() {
+            const langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'es'];
+            for (const l of langs) {
+                const code = (l || '').toLowerCase().slice(0, 2);
+                if (code === 'it') return 'it';
+                if (code === 'en') return 'en';
+                if (code === 'es') return 'es';
+            }
+            return 'es'; // idioma por defecto del producto
+        }
+
+        function applyLanguage(lang) {
+            if (!I18N[lang]) lang = 'es';
+            currentLang = lang;
+            try { localStorage.setItem('hirostarLang', lang); } catch (e) { /* no critico */ }
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const txt = I18N[lang][key];
+                if (txt !== undefined) el.innerHTML = txt;
+            });
+            document.documentElement.lang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));
+
+            // Re-generar los textos que arma el JS dinámicamente en el idioma activo
+            if (typeof applySalesMixUI === 'function') applySalesMixUI();
+            if (typeof applyLogisticsUI === 'function') applyLogisticsUI();
+            if (typeof calculate === 'function') calculate();
+        }
+        // ─────────────────────────────────────────────────────────────────
         let costsChartObj = null;
         let logisticsEnabled = false;
         let salesMixEnabled = false;  // true = DTC+Clubs, false = Distribuidor
         let manualShippingOverride = false;
 
-        // Data for Simulator logic (100% Exclusive molds only)
-        const volumeLevels = [1000, 1500, 2000, 2500, 3000, 3500, 4000];
-        
-        // FOB prices — 100% exclusive molds
-        const fobDiscountFactors = [1.00, 0.96, 0.92, 0.86, 0.81, 0.79, 0.78];
+        // ─── Fuente única de verdad: tablas de descuento por volumen ──────
+        // Antes vivían repetidas en 3 lugares (calculate(), updateCharts()
+        // y las funciones de Valoración). Ahora todo el archivo lee de aquí,
+        // así que un solo cambio de cotización se refleja en TODA la página.
+        const VOLUME_CONFIG = {
+            levels:     [1000, 1500, 2000, 2500, 3000, 3500, 4000],
+            // FOB — 100% moldes exclusivos
+            fobFactors: [1.00, 0.96, 0.92, 0.86, 0.81, 0.79, 0.78],
+            // Flete por par (LCL → FCL a partir de 3,000 pares)
+            shipping:   [3.50, 3.00, 2.50, 2.00, 1.67, 1.50, 1.40],
+            // Aranceles + nacionalización (% sobre FOB)
+            importRate: [0.40, 0.38, 0.36, 0.34, 0.31, 0.30, 0.29]
+        };
 
-        // Shipping rates (per pair reduces as LCL converts to FCL at 3000 pairs)
-        const shippingSeries = [3.50, 3.00, 2.50, 2.00, 1.67, 1.50, 1.40];
-        const importRateSeries = [0.40, 0.38, 0.36, 0.34, 0.31, 0.30, 0.29];
+        // Alias para no tener que tocar el resto del código existente
+        const volumeLevels = VOLUME_CONFIG.levels;
+        const fobDiscountFactors = VOLUME_CONFIG.fobFactors;
+        const shippingSeries = VOLUME_CONFIG.shipping;
+        const importRateSeries = VOLUME_CONFIG.importRate;
+
+        // ─── Fuente única de verdad: supuestos de ingreso ──────────────────
+        // El Simulador de ROI y la sección de Valoración calculaban el fee de
+        // marca y el descuento a distribuidor cada uno por su lado (0.15 y
+        // 0.55 escritos a mano en 3 sitios). Ahora ambos leen de aquí, así
+        // que quedan alineados y un cambio de política comercial se aplica
+        // en todo el archivo a la vez.
+        const REVENUE_CONFIG = {
+            brandFeeRate: 0.15,        // % del ingreso bruto que retiene la marca
+            retailGatewayFee: 15,      // Cifra estandar por defecto (USD/par) — editable en la tabla "Ingreso Canal Directo"
+            distributorPvpRatio: 0.55  // % del PVP que paga un distribuidor (modelo multi-país de Valoración)
+        };
+
+        // Lee el fee de pasarela+envío desde el campo editable de la tabla técnica.
+        // Si el campo aún no existe en el DOM (primera carga) o está vacío, usa la cifra estándar.
+        function getRetailGatewayFee() {
+            const input = document.getElementById('tech-retail-fee');
+            if (input && input.value !== '') return parseFloat(input.value) || 0;
+            return REVENUE_CONFIG.retailGatewayFee;
+        }
+
+        // ─── Guardado local en el navegador ────────────────────────────────
+        // Cada visitante conserva su propia simulación (sliders, tabla de costos
+        // y escenario) en SU navegador. No se comparte entre personas ni entre
+        // dispositivos, y no pasa por ningún servidor.
+        const STORAGE_KEY = 'hirostarSimState_v1';
+        let saveIndicatorTimer = null;
+
+        function collectRowsState(bodyId, inputClass) {
+            const rows = [];
+            document.querySelectorAll('#' + bodyId + ' tr').forEach(tr => {
+                const dataId = tr.getAttribute('data-id') || '';
+                const isCustom = dataId.indexOf('custom-') === 0 || dataId === '';
+                const valueInput = tr.querySelector('.' + inputClass);
+                const nameInput = tr.querySelector('input[type="text"]');
+                rows.push({
+                    dataId: dataId,
+                    isCustom: isCustom,
+                    name: nameInput ? nameInput.value : null,
+                    value: valueInput ? valueInput.value : '0'
+                });
+            });
+            return rows;
+        }
+
+        function saveState() {
+            if (suppressAutoSave) return;
+            try {
+                const state = {
+                    v: 1,
+                    sliders: {},
+                    tech: {},
+                    toggles: {
+                        salesMix: !!document.getElementById('toggle-salesmix')?.checked,
+                        logistics: !!document.getElementById('toggle-logistics')?.checked,
+                        manualShippingOverride: manualShippingOverride
+                    },
+                    fixedRows: collectRowsState('fixed-cost-body', 'fixed-cost-input'),
+                    varRows: collectRowsState('var-cost-body', 'var-cost-input'),
+                    scenario: activeScenario
+                };
+                ['range-qty','range-pvp','range-split','range-comm',
+                 'range-countries','range-ppc','range-vpvp','range-vdtc','range-opex','range-mult'
+                ].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) state.sliders[id] = el.value;
+                });
+                ['tech-shipping','tech-import-rate','tech-retail-fee'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) state.tech[id] = el.value;
+                });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                showSaveIndicator();
+            } catch (e) {
+                // Modo incognito, almacenamiento lleno, etc. — no es crítico, seguimos sin guardar.
+                console.warn('No se pudo guardar la simulación en este navegador:', e);
+            }
+        }
+
+        function showSaveIndicator() {
+            const ind = document.getElementById('save-indicator');
+            if (!ind) return;
+            ind.classList.add('show');
+            clearTimeout(saveIndicatorTimer);
+            saveIndicatorTimer = setTimeout(() => ind.classList.remove('show'), 1400);
+        }
+
+        function applyRowsState(bodyId, addRowFn, valueClass, rowsSaved) {
+            if (!rowsSaved) return;
+            const tbody = document.getElementById(bodyId);
+            rowsSaved.forEach(saved => {
+                if (saved.isCustom) {
+                    // Recrea la fila personalizada que el visitante había agregado
+                    addRowFn();
+                    const newRow = tbody.lastElementChild;
+                    const nameInput = newRow.querySelector('input[type="text"]');
+                    const valueInput = newRow.querySelector('.' + valueClass);
+                    if (nameInput && saved.name) nameInput.value = saved.name;
+                    if (valueInput) valueInput.value = saved.value;
+                } else {
+                    // Fila estándar: solo restauramos el valor editado
+                    const row = tbody.querySelector('tr[data-id="' + saved.dataId + '"]');
+                    const valueInput = row ? row.querySelector('.' + valueClass) : null;
+                    if (valueInput) valueInput.value = saved.value;
+                }
+            });
+        }
+
+        function loadState() {
+            let raw;
+            try {
+                raw = localStorage.getItem(STORAGE_KEY);
+            } catch (e) {
+                return false; // localStorage no disponible en este navegador/modo
+            }
+            if (!raw) return false;
+            let state;
+            try {
+                state = JSON.parse(raw);
+            } catch (e) {
+                return false;
+            }
+
+            // 1. Filas de costos (fijas/variables), incluyendo personalizadas
+            applyRowsState('fixed-cost-body', addFixedRow, 'fixed-cost-input', state.fixedRows);
+            applyRowsState('var-cost-body', addVarRow, 'var-cost-input', state.varRows);
+
+            // 2. Sliders del simulador y de valoración
+            Object.keys(state.sliders || {}).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = state.sliders[id];
+            });
+
+            // 3. Campos técnicos editables (flete, aranceles, fee de pasarela)
+            Object.keys(state.tech || {}).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = state.tech[id];
+            });
+            manualShippingOverride = !!(state.toggles && state.toggles.manualShippingOverride);
+
+            // 4. Toggles (canal de venta y logística) sin invertir el estado, solo aplicarlo
+            if (state.toggles) {
+                const cbMix = document.getElementById('toggle-salesmix');
+                if (cbMix) { cbMix.checked = state.toggles.salesMix; salesMixEnabled = state.toggles.salesMix; applySalesMixUI(); }
+                const cbLog = document.getElementById('toggle-logistics');
+                if (cbLog) { cbLog.checked = state.toggles.logistics; logisticsEnabled = state.toggles.logistics; applyLogisticsUI(); }
+            }
+
+            // 5. Escenario de Valoración activo, y luego reponer los sliders por si el
+            //    visitante los había ajustado manualmente sobre ese escenario.
+            if (state.scenario && SCENARIOS[state.scenario]) {
+                setScenario(state.scenario);
+                Object.keys(state.sliders || {}).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = state.sliders[id];
+                });
+            }
+
+            recalcFixedTotal();
+            recalcVarTotal();
+            calculate();
+            calcValuation();
+            return true;
+        }
+
+        function resetSimulation() {
+            if (!confirm(t('reset_confirm'))) return;
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* nada que hacer */ }
+            location.reload();
+        }
+        // ─────────────────────────────────────────────────────────────────
+
+        // ─── Resumen en PDF, en lenguaje simple ────────────────────────────
+        // No usa ninguna librería externa: arma un bloque de texto explicativo
+        // y usa la función nativa de "Imprimir" del navegador (Ctrl+P / Cmd+P)
+        // para que el visitante lo guarde como PDF. Cero dependencias, funciona
+        // sin internet una vez cargada la página.
+
+        function buildPlainLanguageROI(state) {
+            if (!state || typeof state.qty === 'undefined') {
+                return '<p>' + t('pdf_no_data') + '</p>';
+            }
+            const channelText = state.salesMixEnabled ? t('pdf_channel_direct') : t('pdf_channel_distrib');
+            const logisticsExplain = state.logisticsEnabled
+                ? t('pdf_logistics_on', { sh: '$' + state.shipping.toFixed(2), ta: '$' + state.tariffs.toFixed(2) })
+                : t('pdf_logistics_off');
+            const roiText = state.roi >= 0
+                ? t('pdf_roi_positive', { amt: state.roi.toFixed(0) })
+                : t('pdf_roi_negative', { amt: Math.abs(state.roi).toFixed(0) });
+            return `
+                <p><strong>${t('pdf_q_what')}</strong> ${t('pdf_evaluating', { qty: state.qty.toLocaleString('en-US'), channel: channelText })}</p>
+                <div class="pdf-kpis">
+                    <div class="pdf-kpi"><span>${t('pdf_kpi_investment')}</span><strong>${formatCurrency(state.totalInvestment)}</strong></div>
+                    <div class="pdf-kpi"><span>${t('pdf_kpi_unitcost')}</span><strong>$${state.landedCost.toFixed(2)}</strong></div>
+                    <div class="pdf-kpi"><span>${t('pdf_kpi_profit')}</span><strong>${formatCurrency(state.netProfit)}</strong></div>
+                    <div class="pdf-kpi"><span>${t('pdf_kpi_roi')}</span><strong>${state.roi.toFixed(1)}%</strong></div>
+                </div>
+                <p><strong>${t('pdf_q_cost', { cost: state.landedCost.toFixed(2) })}</strong> ${t('pdf_cost_explain', { fob: state.fob.toFixed(2), mold: state.moldPerPair.toFixed(2), logistics: logisticsExplain })}</p>
+                <p><strong>${t('pdf_q_roi', { roi: state.roi.toFixed(1) })}</strong> ${roiText}</p>
+                <p><strong>${t('pdf_q_breakeven')}</strong> ${t('pdf_breakeven_explain', { pairs: state.breakEvenPairs.toLocaleString('en-US'), pct: state.breakEvenPct, qty: state.qty.toLocaleString('en-US') })}</p>
+            `;
+        }
+
+        function buildPlainLanguageValuation(state) {
+            if (!state || !state.lastRow) return '';
+            const scenarioName = t('scenario_' + state.activeScenario + '_name');
+            const scenarioDesc = t('scenario_' + state.activeScenario + '_desc');
+            const plural = state.yr5c === 1 ? (currentLang === 'it' ? 'e' : (currentLang === 'en' ? 'y' : '')) : (currentLang === 'it' ? 'i' : (currentLang === 'en' ? 'ies' : 'es'));
+            return `
+                <h2>${t('pdf_valuation_title', { name: scenarioName })}</h2>
+                <p>${scenarioDesc}</p>
+                <p>${t('pdf_valuation_body', {
+                    countries: state.yr5c, plural: plural,
+                    pairs: state.lastRow.pairs.toLocaleString('en-US'),
+                    netRev: fmtM(state.lastRow.netRev), ebitda: fmtM(state.lastRow.ebitda),
+                    margin: state.lastRow.ebitdaMargin.toFixed(0)
+                })}</p>
+                <p>${t('pdf_valuation_multiple', { mult: state.mult, val: fmtM(state.valuation) })}</p>
+                <p class="pdf-note" style="border:none; margin-top:0; padding-top:0;">${t('pdf_valuation_note')}</p>
+            `;
+        }
+
+        function downloadPdfSummary() {
+            const localeMap = { es: 'es-CO', en: 'en-US', it: 'it-IT' };
+            const fecha = new Date().toLocaleDateString(localeMap[currentLang] || 'es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+            const summary = document.getElementById('pdf-summary');
+            summary.innerHTML = `
+                <h1>${t('pdf_h1')}</h1>
+                <p style="color:#888; font-size:9pt; margin-bottom:0.6cm;">${t('pdf_generated_on', { fecha })}</p>
+                <h2>${t('pdf_h2_roi')}</h2>
+                ${buildPlainLanguageROI(lastCalcState)}
+                ${buildPlainLanguageValuation(lastValuationState)}
+                <p class="pdf-note">${t('pdf_final_note')}</p>
+            `;
+            window.print();
+        }
+        // ─────────────────────────────────────────────────────────────────
 
         // Tooling cost — always 100% exclusive
         function toggleSalesMix() {
             const cb = document.getElementById('toggle-salesmix');
             if (document.activeElement !== cb) cb.checked = !cb.checked;
             salesMixEnabled = cb.checked;
+            applySalesMixUI();
+            calculate();
+        }
 
+        // Aplica el estado visual del toggle sin invertirlo — usado tanto por el
+        // clic del usuario como al restaurar una simulación guardada en el navegador.
+        function applySalesMixUI() {
             const row = document.getElementById('salesmix-toggle-row');
             const groupSplit = document.getElementById('group-split');
             const groupComm = document.getElementById('group-comm');
@@ -1693,23 +2211,23 @@
                 groupSplit.style.pointerEvents = 'auto';
                 groupComm.style.opacity = '1';
                 groupComm.style.pointerEvents = 'auto';
-                document.getElementById('salesmix-desc').innerText = 'DTC Online + Consignación en Clubes';
-                pvpLabel.innerText = 'Precio de Venta al Público (PVP)';
-                row.querySelector('strong').innerText = 'Mix de Ventas — Canal Directo';
-                chartNote.innerHTML = '<strong style="color: var(--accent-primary);">Canal Directo activo:</strong> La mezcla DTC + Consignación retiene entre el 70–100% del PVP en ingresos netos. El margen de consignación siempre supera al precio de distribuidor, compensando el costo de mantener inventario en pista.';
+                document.getElementById('salesmix-desc').innerText = t('salesmix_desc_direct');
+                pvpLabel.innerText = t('pvp_label_direct');
+                row.querySelector('strong').innerText = t('salesmix_title_direct');
+                chartNote.innerHTML = t('chart_note_direct');
             } else {
                 row.classList.remove('active');
                 groupSplit.style.opacity = '0.3';
                 groupSplit.style.pointerEvents = 'none';
                 groupComm.style.opacity = '0.3';
                 groupComm.style.pointerEvents = 'none';
-                document.getElementById('salesmix-desc').innerText = 'Precio directo a distribuidores (mayorista)';
-                pvpLabel.innerText = 'Precio de Venta a Distribuidor (Mayorista)';
-                row.querySelector('strong').innerText = 'Mix de Ventas — Canal Distribuidor';
-                chartNote.innerHTML = '<strong style="color: rgba(255,0,127,0.9);">Canal Distribuidor activo:</strong> El precio configurado es tu precio de venta al distribuidor. Ellos aplicarán su margen (típicamente 40–60%) para llegar al precio final al público. La comisión del club no aplica en este escenario.';
+                document.getElementById('salesmix-desc').innerText = t('salesmix_desc_distrib');
+                pvpLabel.innerText = t('pvp_label_distrib');
+                row.querySelector('strong').innerText = t('salesmix_title_distrib');
+                chartNote.innerHTML = t('chart_note_distrib');
             }
-            calculate();
         }
+
 
         function toggleLogistics() {
             const cb = document.getElementById('toggle-logistics');
@@ -1717,7 +2235,12 @@
                 cb.checked = !cb.checked;
             }
             logisticsEnabled = cb.checked;
+            applyLogisticsUI();
+            calculate();
+        }
 
+        // Igual que applySalesMixUI: solo pinta el estado, sin invertirlo.
+        function applyLogisticsUI() {
             const row = document.getElementById('logistics-toggle-row');
             const rowShipping = document.getElementById('row-shipping');
             const rowTariffs = document.getElementById('row-tariffs');
@@ -1731,7 +2254,6 @@
                 rowShipping.classList.add('dimmed');
                 rowTariffs.classList.add('dimmed');
             }
-            calculate();
         }
 
         function formatCurrency(num) {
@@ -1770,15 +2292,15 @@
 
             let blendedRevenuePerPair;
             if (salesMixEnabled) {
-                const retailNetPrice = pvp - 15;
+                const retailNetPrice = pvp - getRetailGatewayFee();
                 const consigNetPrice = pvp * (1.0 - clubCommission);
                 blendedRevenuePerPair = (splitDTC * retailNetPrice) + (splitConsig * consigNetPrice);
             } else {
                 blendedRevenuePerPair = pvp;
             }
 
-            // Fee a la marca: 15% sobre el ingreso bruto por par
-            const BRAND_FEE_RATE = 0.15;
+            // Fee a la marca: % sobre el ingreso bruto por par (fuente única: REVENUE_CONFIG)
+            const BRAND_FEE_RATE = REVENUE_CONFIG.brandFeeRate;
             const brandFeePerPair = blendedRevenuePerPair * BRAND_FEE_RATE;
             const netRevenueAfterFee = blendedRevenuePerPair - brandFeePerPair;
 
@@ -1802,13 +2324,13 @@
             document.getElementById('kpi-roi').innerText = roi.toFixed(1) + '%';
             const roiSub = document.getElementById('kpi-roi-sub');
             roiSub.innerText = netProfit >= 0
-                ? 'Equivale a ' + formatCurrency(netProfit) + ' de retorno neto'
-                : 'Equivale a ' + formatCurrency(Math.abs(netProfit)) + ' de perdida neta';
+                ? t('roi_sub_positive', { amt: formatCurrency(netProfit) })
+                : t('roi_sub_negative', { amt: formatCurrency(Math.abs(netProfit)) });
             roiSub.className = netProfit >= 0 ? 'kpi-trend positive' : 'kpi-trend';
 
             // Break-even KPI
             document.getElementById('kpi-breakeven').innerText = breakEvenPairs.toLocaleString('en-US');
-            document.getElementById('kpi-breakeven-sub').innerText = breakEvenPct + '% del lote (' + qty.toLocaleString('en-US') + ' pares)';
+            document.getElementById('kpi-breakeven-sub').innerText = t('breakeven_sub', { pct: breakEvenPct, qty: qty.toLocaleString('en-US') });
 
             // Cost breakdowns indicators
             document.getElementById('breakdown-fob').innerText = '$' + fob.toFixed(2);
@@ -1835,17 +2357,26 @@
             });
 
             // Change KPI label subtexts based on volume
-            const logLabel = logisticsEnabled ? '' : ' <span style="color:rgba(255,0,127,0.8); font-size:0.75rem">[Sin Logística]</span>';
+            const logLabel = logisticsEnabled ? '' : t('no_logistics_tag');
             if (qty >= 3000) {
-                document.getElementById('kpi-investment-sub').innerHTML = '<span style="color:var(--accent-primary)">¡Lote de Contenedor FCL Completo!</span>' + logLabel;
-                document.getElementById('kpi-unit-cost-sub').innerHTML = 'Máxima optimización de flete' + logLabel;
+                document.getElementById('kpi-investment-sub').innerHTML = t('kpi_investment_sub_fcl') + logLabel;
+                document.getElementById('kpi-unit-cost-sub').innerHTML = t('kpi_unitcost_sub_fcl') + logLabel;
             } else {
-                document.getElementById('kpi-investment-sub').innerHTML = 'Carga LCL parcial' + logLabel;
-                document.getElementById('kpi-unit-cost-sub').innerHTML = 'Costo puesto en bodega' + logLabel;
+                document.getElementById('kpi-investment-sub').innerHTML = t('kpi_investment_sub_lcl') + logLabel;
+                document.getElementById('kpi-unit-cost-sub').innerHTML = t('kpi_unitcost_sub_lcl') + logLabel;
             }
 
             // Update charts
             updateCharts(totalInvestment, totalRevenue, netProfit, qty, landedCost);
+
+            // Guarda los resultados para el resumen en PDF y persiste la simulación en el navegador
+            lastCalcState = {
+                qty, pvp, salesMixEnabled, logisticsEnabled,
+                fob, moldPerPair, shipping, tariffs, landedCost,
+                totalInvestment, blendedRevenuePerPair, netRevenueAfterFee,
+                totalRevenue, netProfit, roi, breakEvenPairs, breakEvenPct
+            };
+            saveState();
         }
 
         function updateCharts(investment, revenue, profit, currentQty, currentLanded) {
@@ -2024,6 +2555,7 @@
             setText('scenario-var-total', formatCurrency(state.fob * qty));
             setText('scenario-shipping', '$' + (logisticsEnabled ? state.shipping : 0).toFixed(2) + '/par');
             setText('scenario-import', '$' + (logisticsEnabled ? state.tariffs : 0).toFixed(2) + '/par');
+            setText('scenario-retail-fee', '$' + getRetailGatewayFee().toFixed(2) + '/par');
 
             document.querySelectorAll('#costos .fixed-cost-input').forEach(input => {
                 const value = parseFloat(input.value) || 0;
@@ -2081,7 +2613,7 @@
             tr.setAttribute('data-id', id);
             tr.innerHTML = `
                 <td>
-                    <input type="text" style="background:transparent; border:none; border-bottom:1px solid var(--border-color); color:var(--text-primary); font-size:0.85rem; padding:0.2rem 0; width:90%; outline:none;" placeholder="Nombre del concepto...">
+                    <input type="text" style="background:transparent; border:none; border-bottom:1px solid var(--border-color); color:var(--text-primary); font-size:0.85rem; padding:0.2rem 0; width:90%; outline:none;" placeholder="Nombre del concepto..." oninput="saveState()">
                     <span class="cost-badge badge-editable">editable</span>
                 </td>
                 <td>
@@ -2101,7 +2633,7 @@
             tr.setAttribute('data-id', id);
             tr.innerHTML = `
                 <td>
-                    <input type="text" style="background:transparent; border:none; border-bottom:1px solid var(--border-color); color:var(--text-primary); font-size:0.85rem; padding:0.2rem 0; width:90%; outline:none;" placeholder="Nombre del concepto...">
+                    <input type="text" style="background:transparent; border:none; border-bottom:1px solid var(--border-color); color:var(--text-primary); font-size:0.85rem; padding:0.2rem 0; width:90%; outline:none;" placeholder="Nombre del concepto..." oninput="saveState()">
                     <span class="cost-badge badge-var">variable</span>
                 </td>
                 <td>
@@ -2115,18 +2647,29 @@
 
         // Initialize dashboard
         window.onload = function() {
-            document.getElementById('salesmix-toggle-row').querySelector('strong').innerText = 'Mix de Ventas - Canal Distribuidor';
-            document.getElementById('salesmix-desc').innerText = 'Precio directo a distribuidores (mayorista)';
-            document.getElementById('pvp-label').innerText = 'Precio de Venta a Distribuidor (Mayorista)';
-            document.getElementById('chart-note-text').innerHTML = '<strong style="color: rgba(255,0,127,0.9);">Canal Distribuidor activo:</strong> El precio configurado es tu precio de venta al distribuidor. Ellos aplicaran su margen para llegar al precio final al publico. La comision del club no aplica en este escenario.';
-            document.getElementById('row-shipping').classList.add('dimmed');
-            document.getElementById('row-tariffs').classList.add('dimmed');
             initCharts();
             recalcFixedTotal();
             recalcVarTotal();
             calculate();
             initValuationCharts();
             setScenario('modesto');
+
+            // Idioma: primero respeta lo que la persona ya eligió manualmente en
+            // este navegador; si nunca eligió, detecta el idioma del navegador.
+            let savedLang = null;
+            try { savedLang = localStorage.getItem('hirostarLang'); } catch (e) { /* no critico */ }
+            applyLanguage(savedLang || detectBrowserLang());
+
+            // Si este navegador ya tenía una simulación guardada, la restauramos
+            // encima de los valores por defecto que se acaban de fijar arriba.
+            const restored = loadState();
+            const banner = document.getElementById('restore-banner');
+            if (banner) banner.style.display = restored ? 'flex' : 'none';
+
+            // Ya terminó todo el proceso de arranque/restauración: de aquí en
+            // adelante sí queremos que cada cambio del visitante se guarde.
+            suppressAutoSave = false;
+            saveState();
         };
 
         // ─── VALORACIÓN DE EMPRESA ─────────────────────────────────────
@@ -2187,8 +2730,8 @@
             const s = SCENARIOS[key];
 
             // Update tabs
-            document.querySelectorAll('.scen-tab').forEach(t => {
-                t.classList.remove('active','modesto','base','ideal');
+            document.querySelectorAll('.scen-tab').forEach(tab => {
+                tab.classList.remove('active','modesto','base','ideal');
             });
             const activeTab = document.getElementById('tab-' + key);
             activeTab.classList.add('active', s.tabClass);
@@ -2197,8 +2740,8 @@
             const banner = document.getElementById('scen-banner');
             banner.style.background = s.banner;
             banner.style.borderColor = s.bannerBorder;
-            document.getElementById('scen-name').innerText = s.name;
-            document.getElementById('scen-desc').innerText = s.desc;
+            document.getElementById('scen-name').innerText = t('scenario_' + key + '_name');
+            document.getElementById('scen-desc').innerText = t('scenario_' + key + '_desc');
 
             // Set sliders
             const yr5countries = s.countries[4];
@@ -2220,12 +2763,11 @@
 
         // ── Helpers: volume-based cost lookup (mirrors main simulator) ─────────
         function getFobDiscountForVolume(pairs) {
-            // volumeLevels = [1000,1500,2000,2500,3000,3500,4000]
-            // fobDiscountFactors = [1.00,0.96,0.92,0.86,0.81,0.79,0.78]
-            if (pairs <= 1000) return 1.00;
-            if (pairs >= 4000) return 0.78;
-            const levels  = [1000,1500,2000,2500,3000,3500,4000];
-            const factors = [1.00,0.96,0.92,0.86,0.81,0.79,0.78];
+            // Lee de VOLUME_CONFIG (fuente única) en vez de duplicar las tablas aquí.
+            const levels  = VOLUME_CONFIG.levels;
+            const factors = VOLUME_CONFIG.fobFactors;
+            if (pairs <= levels[0]) return factors[0];
+            if (pairs >= levels[levels.length - 1]) return factors[factors.length - 1];
             for (let i = 0; i < levels.length - 1; i++) {
                 if (pairs >= levels[i] && pairs < levels[i+1]) {
                     const t = (pairs - levels[i]) / (levels[i+1] - levels[i]);
@@ -2236,14 +2778,13 @@
         }
 
         function getLogisticsCostForVolume(fob, pairs) {
-            // shipping series (per pair): [3.50,3.00,2.50,2.00,1.67,1.50,1.40]
-            // import rate series: [0.40,0.38,0.36,0.34,0.31,0.30,0.29]
-            const levels   = [1000,1500,2000,2500,3000,3500,4000];
-            const shipping = [3.50,3.00,2.50,2.00,1.67,1.50,1.40];
-            const impRates = [0.40,0.38,0.36,0.34,0.31,0.30,0.29];
+            // Lee de VOLUME_CONFIG (fuente única) en vez de duplicar las tablas aquí.
+            const levels   = VOLUME_CONFIG.levels;
+            const shipping = VOLUME_CONFIG.shipping;
+            const impRates = VOLUME_CONFIG.importRate;
             let sh, ir;
-            if (pairs <= 1000)      { sh = shipping[0]; ir = impRates[0]; }
-            else if (pairs >= 4000) { sh = shipping[6]; ir = impRates[6]; }
+            if (pairs <= levels[0])                 { sh = shipping[0]; ir = impRates[0]; }
+            else if (pairs >= levels[levels.length - 1]) { sh = shipping[shipping.length - 1]; ir = impRates[impRates.length - 1]; }
             else {
                 for (let i = 0; i < levels.length - 1; i++) {
                     if (pairs >= levels[i] && pairs < levels[i+1]) {
@@ -2319,10 +2860,12 @@
                 const landedPerPair = fobYear + amortPerPair + logCostPerPair;
                 const cogs = pairsTotal * landedPerPair;
 
-                // Revenue model: mix de DTC (PVP) y distribuidor (PVP × 0.55)
-                const blended = dtcPct * pvp + (1 - dtcPct) * pvp * 0.55;
+                // Revenue model: mix de DTC (PVP neto de pasarela) y distribuidor (% del PVP)
+                // — mismos supuestos que el Simulador de ROI, vía REVENUE_CONFIG.
+                const dtcNetPrice = pvp - getRetailGatewayFee();
+                const blended = dtcPct * dtcNetPrice + (1 - dtcPct) * pvp * REVENUE_CONFIG.distributorPvpRatio;
                 const grossRev = pairsTotal * blended;
-                const brandFee = grossRev * 0.15;
+                const brandFee = grossRev * REVENUE_CONFIG.brandFeeRate;
                 const netRev = grossRev - brandFee;
                 const grossProfit = netRev - cogs;
                 const opex = netRev * opexPct;
@@ -2411,9 +2954,32 @@
 
             // Update charts
             updateValuationCharts(revenues, ebitdas, cumFlows);
+
+            // Guarda los resultados para el resumen en PDF y persiste la simulación en el navegador
+            lastValuationState = {
+                yr5c, ppc, pvp, dtcPct, opexPct, mult,
+                lastRow, valuation, activeScenario
+            };
+            saveState();
         }
 
         function initValuationCharts() {
+            // Mismo resguardo que initCharts(): si Chart.js no cargó (p.ej. sin
+            // internet durante una presentación), evitamos que esto truene y
+            // corte el resto de window.onload (incluyendo la restauración de
+            // la simulación guardada).
+            if (typeof Chart === 'undefined') {
+                document.querySelectorAll('#chart-valrev, #chart-valcum').forEach(canvas => {
+                    const fallback = document.createElement('p');
+                    fallback.style.color = 'var(--text-secondary)';
+                    fallback.style.fontSize = '0.85rem';
+                    fallback.style.lineHeight = '1.5';
+                    fallback.innerText = 'La grafica se cargara cuando Chart.js este disponible.';
+                    canvas.replaceWith(fallback);
+                });
+                return;
+            }
+
             const labelStyle = { color: '#a0aec0' };
             const gridStyle  = { color: 'rgba(255,255,255,0.05)' };
 
@@ -2508,8 +3074,9 @@
                 const fobY5 = baseFob * fobDisc;
                 const logC = logOn ? getLogisticsCostForVolume(fobY5, pairs) : 0;
                 const landedY5 = fobY5 + amort + logC;
-                const blended = (s.dtc/100) * s.pvp + (1 - s.dtc/100) * s.pvp * 0.55;
-                const netRev = pairs * blended * 0.85;
+                const dtcNetPrice = s.pvp - getRetailGatewayFee();
+                const blended = (s.dtc/100) * dtcNetPrice + (1 - s.dtc/100) * s.pvp * REVENUE_CONFIG.distributorPvpRatio;
+                const netRev = pairs * blended * (1 - REVENUE_CONFIG.brandFeeRate);
                 const cogs = pairs * landedY5;
                 const ebitda = netRev - cogs - netRev * (s.opex/100);
                 const val = ebitda * s.mult;
