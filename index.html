@@ -5,28 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hirostar T1 Pro - Dashboard de Consignación e Inversión</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0d0f12;
-            --panel-bg: rgba(22, 26, 33, 0.7);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --accent-primary: #00f2fe;
-            --accent-secondary: #4facfe;
-            --accent-accent: #ff007f;
-            --text-primary: #ffffff;
-            --text-secondary: #a0aec0;
-            --glass-shine: rgba(255, 255, 255, 0.03);
-            --success-color: #00e676;
+            /* Identidad Hirostar — cruce entre el T1 Pro "White Phantom" (blanco cálido,
+               negro técnico, plata TPU) y las palas Hirostar (carbono negro, dorado/rojo). */
+            --bg-color: #0a0a0c;
+            --panel-bg: rgba(24, 22, 19, 0.65);
+            --border-color: rgba(245, 243, 238, 0.08);
+            --accent-primary: #c9a961;   /* dorado metálico — palas "Black Gold" */
+            --accent-secondary: #9aa1ab; /* plata/grafito — TPU Lock Frame del T1 Pro */
+            --accent-accent: #ff3d1a;    /* rojo — línea Alien, uso en alertas/fees */
+            --text-primary: #f5f3ee;     /* blanco phantom, no blanco puro */
+            --text-secondary: #a39c8f;
+            --glass-shine: rgba(245, 243, 238, 0.03);
+            --success-color: #4caf7d;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            font-family: 'IBM Plex Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -34,9 +36,10 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(79, 172, 254, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(255, 0, 127, 0.04) 0%, transparent 40%);
+            background-image:
+                repeating-linear-gradient(135deg, rgba(245,243,238,0.012) 0px, rgba(245,243,238,0.012) 1px, transparent 1px, transparent 10px),
+                radial-gradient(circle at 10% 20%, rgba(201, 169, 97, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 61, 26, 0.035) 0%, transparent 40%);
             background-attachment: fixed;
         }
 
@@ -60,7 +63,7 @@
         }
 
         .brand-logo {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 800;
             font-size: 1.8rem;
             letter-spacing: 2px;
@@ -79,7 +82,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+            box-shadow: 0 0 10px rgba(255, 61, 26, 0.2);
         }
 
         .nav-links {
@@ -112,7 +115,7 @@
             background: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 700;
             font-size: 0.72rem;
             letter-spacing: 0.5px;
@@ -128,7 +131,7 @@
         }
 
         .lang-btn.active {
-            background: rgba(0, 242, 254, 0.12);
+            background: rgba(201, 169, 97, 0.12);
             border-color: var(--accent-primary);
             color: var(--accent-primary);
         }
@@ -140,39 +143,37 @@
         }
 
         .hero-banner {
-            background: linear-gradient(135deg, rgba(22, 26, 33, 0.8) 0%, rgba(13, 15, 18, 0.9) 100%);
+            background: #0a0a0c;
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2.5rem;
+            border-radius: 4px 4px 20px 20px;
+            border-top: 2px solid rgba(201, 169, 97, 0.35);
             margin-bottom: 2.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .hero-banner::before {
-            content: '';
+        .hero-video-bg {
             position: absolute;
             top: 0;
-            right: 0;
-            width: 400px;
+            left: 0;
+            width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 60% 30%, rgba(0, 242, 254, 0.1) 0%, transparent 70%);
-            z-index: 1;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 1;
         }
 
         .hero-text {
-            max-width: 60%;
+            max-width: 56%;
             position: relative;
             z-index: 2;
         }
 
         .hero-subtitle {
             color: var(--accent-primary);
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -181,12 +182,12 @@
         }
 
         .hero-title {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 800;
             font-size: 3rem;
             line-height: 1.1;
             margin-bottom: 1rem;
-            background: linear-gradient(to right, #ffffff, #cbd5e0);
+            background: linear-gradient(to right, #ffffff, #d9d4c8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -210,7 +211,7 @@
             font-size: 0.88rem;
         }
         .cost-table th {
-            background: rgba(0,242,254,0.05);
+            background: rgba(201,169,97,0.05);
             color: var(--accent-primary);
             padding: 0.75rem 1rem;
             text-align: left;
@@ -218,7 +219,7 @@
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border-bottom: 1px solid rgba(0,242,254,0.2);
+            border-bottom: 1px solid rgba(201,169,97,0.2);
         }
         .cost-table td {
             padding: 0.7rem 1rem;
@@ -232,7 +233,7 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-primary);
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 700;
             font-size: 0.95rem;
             padding: 0.4rem 0.7rem;
@@ -243,8 +244,8 @@
         }
         .cost-input:focus {
             border-color: var(--accent-primary);
-            box-shadow: 0 0 8px rgba(0,242,254,0.2);
-            background: rgba(0,242,254,0.04);
+            box-shadow: 0 0 8px rgba(201,169,97,0.2);
+            background: rgba(201,169,97,0.04);
         }
         .cost-input:disabled {
             opacity: 0.4;
@@ -258,18 +259,18 @@
             font-weight: 600;
             margin-left: 0.4rem;
         }
-        .badge-fixed   { background: rgba(0,242,254,0.1);  color: var(--accent-primary); border: 1px solid rgba(0,242,254,0.2); }
-        .badge-var     { background: rgba(255,0,127,0.1);  color: #ff6b9d;              border: 1px solid rgba(255,0,127,0.2); }
+        .badge-fixed   { background: rgba(201,169,97,0.1);  color: var(--accent-primary); border: 1px solid rgba(201,169,97,0.2); }
+        .badge-var     { background: rgba(255,61,26,0.1);  color: #ff8a6b;              border: 1px solid rgba(255,61,26,0.2); }
         .badge-editable{ background: rgba(255,193,7,0.1);  color: #ffc107;              border: 1px solid rgba(255,193,7,0.2); }
         .cost-total-row td {
             font-weight: 700;
             font-size: 0.95rem;
             color: var(--text-primary);
-            border-top: 1px dashed rgba(0,242,254,0.3);
+            border-top: 1px dashed rgba(201,169,97,0.3);
             padding-top: 1rem;
         }
         .cost-total-row .cost-total-val {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-size: 1.3rem;
             font-weight: 800;
             background: linear-gradient(135deg, #fff 40%, var(--accent-primary) 100%);
@@ -297,13 +298,13 @@
             margin-bottom: 0.35rem;
         }
         .scenario-pill strong {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-size: 1rem;
             color: var(--text-primary);
         }
         .cost-table .calculated-cell {
             color: var(--text-secondary);
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 700;
             text-align: right;
             white-space: nowrap;
@@ -344,18 +345,18 @@
         .add-row-btn:hover {
             border-color: var(--accent-primary);
             color: var(--accent-primary);
-            background: rgba(0,242,254,0.03);
+            background: rgba(201,169,97,0.03);
         }
         .del-btn {
             background: none;
             border: none;
-            color: rgba(255,0,127,0.5);
+            color: rgba(255,61,26,0.5);
             cursor: pointer;
             font-size: 1rem;
             padding: 0 0.3rem;
             transition: color 0.2s;
         }
-        .del-btn:hover { color: #ff007f; }
+        .del-btn:hover { color: #ff3d1a; }
 
         /* KPI Grid */
         .kpi-grid {
@@ -379,12 +380,12 @@
             transition: border-color 0.3s ease, background 0.3s ease;
         }
         .toggle-row:hover {
-            border-color: rgba(0, 242, 254, 0.25);
-            background: rgba(0, 242, 254, 0.03);
+            border-color: rgba(201, 169, 97, 0.25);
+            background: rgba(201, 169, 97, 0.03);
         }
         .toggle-row.active {
-            border-color: rgba(0, 242, 254, 0.4);
-            background: rgba(0, 242, 254, 0.05);
+            border-color: rgba(201, 169, 97, 0.4);
+            background: rgba(201, 169, 97, 0.05);
         }
         .toggle-label-text {
             font-size: 0.85rem;
@@ -424,7 +425,7 @@
             transition: transform 0.3s ease, background 0.3s ease;
         }
         .toggle-switch input:checked + .toggle-slider {
-            background: rgba(0, 242, 254, 0.35);
+            background: rgba(201, 169, 97, 0.35);
         }
         .toggle-switch input:checked + .toggle-slider:before {
             transform: translateX(20px);
@@ -449,7 +450,7 @@
 
         .kpi-card:hover {
             transform: translateY(-5px);
-            border-color: rgba(0, 242, 254, 0.3);
+            border-color: rgba(201, 169, 97, 0.3);
         }
 
         .kpi-card::after {
@@ -473,7 +474,7 @@
         }
 
         .kpi-value {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-size: 2.2rem;
             font-weight: 800;
             margin-bottom: 0.4rem;
@@ -505,14 +506,16 @@
         .card {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
+            border-top: 2px solid rgba(201, 169, 97, 0.35);
+            border-radius: 4px 4px 20px 20px;
             padding: 2rem;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
             backdrop-filter: blur(10px);
+            position: relative;
         }
 
         .card-title {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
@@ -592,8 +595,8 @@
 
         .radio-btn-card.active {
             border-color: var(--accent-primary);
-            background: rgba(0, 242, 254, 0.05);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+            background: rgba(201, 169, 97, 0.05);
+            box-shadow: 0 0 15px rgba(201, 169, 97, 0.1);
         }
 
         .radio-title {
@@ -683,7 +686,7 @@
         }
 
         .tech-icon {
-            background: rgba(0, 242, 254, 0.1);
+            background: rgba(201, 169, 97, 0.1);
             color: var(--accent-primary);
             width: 32px;
             height: 32px;
@@ -692,9 +695,9 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             flex-shrink: 0;
-            border: 1px solid rgba(0, 242, 254, 0.2);
+            border: 1px solid rgba(201, 169, 97, 0.2);
         }
 
         .tech-content h4 {
@@ -739,9 +742,9 @@
         }
 
         .badge-size-peak {
-            background: rgba(0, 242, 254, 0.12);
+            background: rgba(201, 169, 97, 0.12);
             color: var(--accent-primary);
-            border: 1px solid rgba(0, 242, 254, 0.2);
+            border: 1px solid rgba(201, 169, 97, 0.2);
             padding: 0.1rem 0.4rem;
             border-radius: 4px;
             font-weight: 700;
@@ -758,7 +761,7 @@
             border-radius: 14px;
             padding: 0.9rem 1.4rem;
             color: var(--text-secondary);
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
@@ -766,25 +769,25 @@
             min-width: 160px;
         }
         .scen-tab small {
-            font-family: 'Inter', sans-serif;
+            font-family: 'IBM Plex Sans', sans-serif;
             font-size: 0.72rem;
             font-weight: 400;
             color: var(--text-secondary);
         }
         .scen-tab:hover {
-            border-color: rgba(0,242,254,0.3);
-            background: rgba(0,242,254,0.04);
+            border-color: rgba(201,169,97,0.3);
+            background: rgba(201,169,97,0.04);
             color: var(--text-primary);
         }
         .scen-tab.active {
             border-color: var(--accent-primary);
-            background: rgba(0,242,254,0.07);
+            background: rgba(201,169,97,0.07);
             color: var(--text-primary);
-            box-shadow: 0 0 20px rgba(0,242,254,0.1);
+            box-shadow: 0 0 20px rgba(201,169,97,0.1);
         }
         .scen-tab.active.modesto { border-color: #ffc107; background: rgba(255,193,7,0.07); box-shadow: 0 0 20px rgba(255,193,7,0.1); }
-        .scen-tab.active.base    { border-color: #4facfe; background: rgba(79,172,254,0.07); box-shadow: 0 0 20px rgba(79,172,254,0.1); }
-        .scen-tab.active.ideal   { border-color: #00e676; background: rgba(0,230,118,0.07); box-shadow: 0 0 20px rgba(0,230,118,0.1); }
+        .scen-tab.active.base    { border-color: #9aa1ab; background: rgba(154,161,171,0.07); box-shadow: 0 0 20px rgba(154,161,171,0.1); }
+        .scen-tab.active.ideal   { border-color: #4caf7d; background: rgba(76,175,125,0.07); box-shadow: 0 0 20px rgba(76,175,125,0.1); }
 
         /* Sync pills */
         .sync-pill {
@@ -793,8 +796,8 @@
             gap: 0.3rem;
             font-size: 0.78rem;
             color: var(--accent-primary);
-            background: rgba(0,242,254,0.05);
-            border: 1px solid rgba(0,242,254,0.15);
+            background: rgba(201,169,97,0.05);
+            border: 1px solid rgba(201,169,97,0.15);
             border-radius: 20px;
             padding: 0.25rem 0.7rem;
         }
@@ -811,7 +814,7 @@
         }
 
         .footer-logo {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 800;
             color: var(--text-primary);
             margin-bottom: 0.5rem;
@@ -856,8 +859,8 @@
             position: fixed;
             bottom: 1.5rem;
             right: 1.5rem;
-            background: rgba(0, 230, 118, 0.12);
-            border: 1px solid rgba(0, 230, 118, 0.35);
+            background: rgba(76, 175, 125, 0.12);
+            border: 1px solid rgba(76, 175, 125, 0.35);
             color: var(--success-color);
             padding: 0.5rem 1rem;
             border-radius: 20px;
@@ -881,8 +884,8 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            background: rgba(0, 242, 254, 0.06);
-            border: 1px solid rgba(0, 242, 254, 0.2);
+            background: rgba(201, 169, 97, 0.06);
+            border: 1px solid rgba(201, 169, 97, 0.2);
             border-radius: 12px;
             padding: 0.9rem 1.3rem;
             margin-bottom: 1.5rem;
@@ -892,8 +895,8 @@
         #restore-banner strong { color: var(--text-primary); }
         .btn-reset-sim {
             background: transparent;
-            border: 1px solid rgba(255, 0, 127, 0.35);
-            color: rgba(255, 0, 127, 0.9);
+            border: 1px solid rgba(255, 61, 26, 0.35);
+            color: rgba(255, 61, 26, 0.9);
             padding: 0.4rem 0.9rem;
             border-radius: 20px;
             font-size: 0.78rem;
@@ -903,7 +906,7 @@
             transition: all 0.2s ease;
         }
         .btn-reset-sim:hover {
-            background: rgba(255, 0, 127, 0.1);
+            background: rgba(255, 61, 26, 0.1);
         }
 
         /* Botones de acción (PDF, reset) */
@@ -911,20 +914,20 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(0, 242, 254, 0.08);
-            border: 1px solid rgba(0, 242, 254, 0.3);
+            background: rgba(201, 169, 97, 0.08);
+            border: 1px solid rgba(201, 169, 97, 0.3);
             color: var(--accent-primary);
             padding: 0.7rem 1.3rem;
             border-radius: 10px;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             font-weight: 700;
             font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
         .btn-action:hover {
-            background: rgba(0, 242, 254, 0.16);
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+            background: rgba(201, 169, 97, 0.16);
+            box-shadow: 0 0 20px rgba(201, 169, 97, 0.15);
         }
 
         /* Resumen para PDF — oculto en pantalla, visible solo al imprimir */
@@ -940,10 +943,10 @@
                 background: #ffffff;
                 color: #1a1a1a;
                 padding: 1.5cm;
-                font-family: 'Inter', Arial, sans-serif;
+                font-family: 'IBM Plex Sans', Arial, sans-serif;
             }
-            #pdf-summary h1 { font-family: 'Outfit', Arial, sans-serif; font-size: 22pt; color: #0d0f12; margin-bottom: 0.2cm; }
-            #pdf-summary h2 { font-family: 'Outfit', Arial, sans-serif; font-size: 14pt; color: #0d0f12; margin: 0.7cm 0 0.3cm; border-bottom: 2px solid #00b8c4; padding-bottom: 0.15cm; }
+            #pdf-summary h1 { font-family: 'Saira Condensed', Arial, sans-serif; font-size: 22pt; color: #0d0f12; margin-bottom: 0.2cm; }
+            #pdf-summary h2 { font-family: 'Saira Condensed', Arial, sans-serif; font-size: 14pt; color: #0d0f12; margin: 0.7cm 0 0.3cm; border-bottom: 2px solid #c9a961; padding-bottom: 0.15cm; }
             #pdf-summary p { font-size: 10.5pt; line-height: 1.55; margin-bottom: 0.35cm; color: #333; }
             #pdf-summary .pdf-kpis { display: flex; flex-wrap: wrap; gap: 0.4cm; margin: 0.4cm 0; }
             #pdf-summary .pdf-kpi { border: 1px solid #ddd; border-radius: 8px; padding: 0.35cm 0.5cm; min-width: 3.8cm; }
@@ -981,11 +984,9 @@
         
         <!-- Hero Banner -->
         <div class="hero-banner">
-            <div class="hero-text">
-                <p class="hero-subtitle" data-i18n="hero_subtitle">Estrategia de Producción 100% Exclusiva — Moldes Propios</p>
-                <h1 class="hero-title" data-i18n="hero_title">Simulador de Inversión & Retorno Hirostar T1 Pro</h1>
-                <p class="hero-desc" data-i18n="hero_desc">Simulador comercial de alta precisión para el modelo de negocio de Hirostar: zapatillas de pádel de alto rendimiento fabricadas con moldes 100% propios en China. Proyecta tu retorno bajo dos escenarios de venta: canal directo (DTC + Consignación en Clubes) o canal distribuidor.</p>
-            </div>
+            <video class="hero-video-bg" autoplay muted loop playsinline>
+                <source src="assets/hero-t1pro.mp4" type="video/mp4">
+            </video>
         </div>
 
         <!-- Aviso: se restauró una simulación guardada en este navegador -->
@@ -999,7 +1000,7 @@
             <button class="btn-action" onclick="downloadPdfSummary()" data-i18n="btn_pdf">
                 📄 Descargar PDF
             </button>
-            <button class="btn-action" style="border-color: rgba(255,0,127,0.3); color: rgba(255,0,127,0.9);" onclick="resetSimulation()" data-i18n="btn_reset_action">
+            <button class="btn-action" style="border-color: rgba(255,61,26,0.3); color: rgba(255,61,26,0.9);" onclick="resetSimulation()" data-i18n="btn_reset_action">
                 🔄 Restablecer valores originales
             </button>
         </div>
@@ -1026,10 +1027,10 @@
                 <h3 class="kpi-value" id="kpi-roi" style="background: linear-gradient(135deg, var(--success-color) 0%, var(--accent-primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">77.7%</h3>
                 <p class="kpi-trend positive" id="kpi-roi-sub">Equivale a $44,000 de retorno neto</p>
             </div>
-            <div class="kpi-card" style="border-color: rgba(255, 0, 127, 0.2); background: rgba(255,0,127,0.03);">
-                <p class="kpi-label" style="color: rgba(255,0,127,0.8);" data-i18n="kpi_breakeven_label">Punto de Equilibrio</p>
-                <h3 class="kpi-value" id="kpi-breakeven" style="background: linear-gradient(135deg, #ff007f 0%, #ff6b9d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">563</h3>
-                <p class="kpi-trend" id="kpi-breakeven-sub" style="color: rgba(255,0,127,0.7);">Pares para recuperar inversión</p>
+            <div class="kpi-card" style="border-color: rgba(255, 61, 26, 0.2); background: rgba(255,61,26,0.03);">
+                <p class="kpi-label" style="color: rgba(255,61,26,0.8);" data-i18n="kpi_breakeven_label">Punto de Equilibrio</p>
+                <h3 class="kpi-value" id="kpi-breakeven" style="background: linear-gradient(135deg, #ff3d1a 0%, #ff8a6b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">563</h3>
+                <p class="kpi-trend" id="kpi-breakeven-sub" style="color: rgba(255,61,26,0.7);">Pares para recuperar inversión</p>
             </div>
         </div>
 
@@ -1038,7 +1039,7 @@
             
             <!-- Controls panel (Left) -->
             <div class="card">
-                <h3 class="card-title"><span data-i18n="control_title">Configuración del Pedido</span> <span style="font-size:0.75rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;" data-i18n="control_title_sub">— Moldes 100% Exclusivos</span></h3>
+                <h3 class="card-title"><span data-i18n="control_title">Configuración del Pedido</span> <span style="font-size:0.75rem; font-weight:400; color:var(--text-secondary); font-family:'IBM Plex Sans',sans-serif;" data-i18n="control_title_sub">— Moldes 100% Exclusivos</span></h3>
 
                 <!-- Quantity Slider -->
                 <div class="control-group">
@@ -1135,9 +1136,9 @@
                         <span data-i18n="bd_landed">Landed Cost Total Unitario:</span>
                         <span class="breakdown-value" id="breakdown-landed">$56.60</span>
                     </div>
-                    <div class="breakdown-row" id="row-brand-fee" style="margin-top:0.6rem; border-top: 1px dashed rgba(255,0,127,0.2); padding-top:0.8rem;">
-                        <span style="color:rgba(255,0,127,0.85);" data-i18n="bd_brandfee">Fee a la Marca (15% del ingreso):</span>
-                        <span class="breakdown-value" id="breakdown-brand-fee" style="color:rgba(255,0,127,0.9);">−$19.50</span>
+                    <div class="breakdown-row" id="row-brand-fee" style="margin-top:0.6rem; border-top: 1px dashed rgba(255,61,26,0.2); padding-top:0.8rem;">
+                        <span style="color:rgba(255,61,26,0.85);" data-i18n="bd_brandfee">Fee a la Marca (15% del ingreso):</span>
+                        <span class="breakdown-value" id="breakdown-brand-fee" style="color:rgba(255,61,26,0.9);">−$19.50</span>
                     </div>
                     <div class="breakdown-row" style="font-size:0.8rem; color: var(--text-secondary); margin-top:0.3rem;">
                         <span data-i18n="bd_netafterfee">Ingreso Neto tras Fee de Marca:</span>
@@ -1165,7 +1166,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="chart-note" style="margin-top: 1.5rem; background: rgba(0, 242, 254, 0.03); border: 1px solid rgba(0, 242, 254, 0.1); border-radius: 12px; padding: 1rem;">
+                <div id="chart-note" style="margin-top: 1.5rem; background: rgba(201, 169, 97, 0.03); border: 1px solid rgba(201, 169, 97, 0.1); border-radius: 12px; padding: 1rem;">
                     <p style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);" id="chart-note-text">
                         <strong style="color: var(--accent-primary);">Canal Directo activo:</strong> La mezcla DTC + Consignación retiene entre el 70–100% del PVP en ingresos netos. El margen de consignación (PVP menos comisión del club) siempre supera al precio de distribuidor, compensando el costo de mantener inventario en pista.
                     </p>
@@ -1181,7 +1182,7 @@
             <div class="card">
                 <h3 class="card-title">
                     <span data-i18n="tech_table_title">Tabla Tecnica del Escenario</span>
-                    <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary); font-family:'Inter',sans-serif;" data-i18n="tech_table_subtitle">Refleja la tabla interactiva y permite editar los supuestos de costo</span>
+                    <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary); font-family:'IBM Plex Sans',sans-serif;" data-i18n="tech_table_subtitle">Refleja la tabla interactiva y permite editar los supuestos de costo</span>
                 </h3>
 
                 <div class="scenario-sync-bar">
@@ -1262,7 +1263,7 @@
                     </div>
 
                     <div>
-                        <p style="font-size:0.78rem; color:rgba(255,0,127,0.8); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.8rem;">Costo unitario, produccion y logistica</p>
+                        <p style="font-size:0.78rem; color:rgba(255,61,26,0.8); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.8rem;">Costo unitario, produccion y logistica</p>
                         <div class="cost-table-wrapper">
                             <table class="cost-table" id="var-cost-table">
                                 <thead>
@@ -1469,7 +1470,7 @@
             <div class="card">
                 <h3 class="card-title">
                     <span data-i18n="card_valuation_title">Valoración de Empresa &amp; Proyección 5 Años</span>
-                    <span style="font-size:0.8rem;font-weight:400;color:var(--text-secondary);font-family:'Inter',sans-serif;" data-i18n="card_valuation_subtitle">Contrato exclusivo de maquila Hirostar · 46 países disponibles</span>
+                    <span style="font-size:0.8rem;font-weight:400;color:var(--text-secondary);font-family:'IBM Plex Sans',sans-serif;" data-i18n="card_valuation_subtitle">Contrato exclusivo de maquila Hirostar · 46 países disponibles</span>
                 </h3>
 
                 <!-- Scenario Tabs -->
@@ -1492,7 +1493,7 @@
                 <div id="scen-banner" style="background:rgba(255,193,7,0.06);border:1px solid rgba(255,193,7,0.2);border-radius:14px;padding:1rem 1.4rem;margin-bottom:2rem;display:flex;gap:2rem;flex-wrap:wrap;align-items:center;">
                     <div>
                         <p style="font-size:0.72rem;color:rgba(255,193,7,0.8);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:0.2rem;">Panorama activo</p>
-                        <p id="scen-name" style="font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;">Modesto</p>
+                        <p id="scen-name" style="font-family:'Saira Condensed',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;">Modesto</p>
                     </div>
                     <div style="flex:1;min-width:200px;">
                         <p id="scen-desc" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">Solo Colombia activo. Crecimiento orgánico conservador. Contrato honrado con 1-3 países en 5 años. Base real y alcanzable.</p>
@@ -1547,7 +1548,7 @@
                     </div>
 
                     <div>
-                        <p style="font-size:0.75rem;color:rgba(255,0,127,0.8);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:1rem;">Parámetros Financieros</p>
+                        <p style="font-size:0.75rem;color:rgba(255,61,26,0.8);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:1rem;">Parámetros Financieros</p>
 
                         <div class="control-group">
                             <div class="control-label">
@@ -1598,14 +1599,14 @@
                         <h3 class="kpi-value" id="vkpi-ebitda" style="font-size:1.6rem;">$280K</h3>
                         <p class="kpi-trend" id="vkpi-ebitda-sub" style="font-size:0.72rem;color:var(--text-secondary);">Margen operativo</p>
                     </div>
-                    <div class="kpi-card" style="padding:1.2rem;border-color:rgba(0,230,118,0.25);background:rgba(0,230,118,0.03);">
-                        <p class="kpi-label" style="font-size:0.72rem;color:rgba(0,230,118,0.8);">Valoración Empresa</p>
-                        <h3 class="kpi-value" id="vkpi-valuation" style="font-size:1.6rem;background:linear-gradient(135deg,#00e676,#00f2fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">$1.4M</h3>
+                    <div class="kpi-card" style="padding:1.2rem;border-color:rgba(76,175,125,0.25);background:rgba(76,175,125,0.03);">
+                        <p class="kpi-label" style="font-size:0.72rem;color:rgba(76,175,125,0.8);">Valoración Empresa</p>
+                        <h3 class="kpi-value" id="vkpi-valuation" style="font-size:1.6rem;background:linear-gradient(135deg,#4caf7d,#c9a961);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">$1.4M</h3>
                         <p class="kpi-trend" id="vkpi-val-sub" style="font-size:0.72rem;color:var(--text-secondary);">EBITDA × múltiplo</p>
                     </div>
-                    <div class="kpi-card" style="padding:1.2rem;border-color:rgba(255,0,127,0.2);background:rgba(255,0,127,0.03);">
-                        <p class="kpi-label" style="font-size:0.72rem;color:rgba(255,0,127,0.7);">Flujo Acumulado 5A</p>
-                        <h3 class="kpi-value" id="vkpi-cumflow" style="font-size:1.6rem;background:linear-gradient(135deg,#ff007f,#ff6b9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">$800K</h3>
+                    <div class="kpi-card" style="padding:1.2rem;border-color:rgba(255,61,26,0.2);background:rgba(255,61,26,0.03);">
+                        <p class="kpi-label" style="font-size:0.72rem;color:rgba(255,61,26,0.7);">Flujo Acumulado 5A</p>
+                        <h3 class="kpi-value" id="vkpi-cumflow" style="font-size:1.6rem;background:linear-gradient(135deg,#ff3d1a,#ff8a6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">$800K</h3>
                         <p class="kpi-trend" id="vkpi-flow-sub" style="font-size:0.72rem;color:var(--text-secondary);">EBITDA total acumulado</p>
                     </div>
                 </div>
@@ -1729,10 +1730,10 @@
                 footer_line1: 'Proyección técnica y comercial - Maquila en China para Latam y Europa.',
                 footer_line2: '© 2026 Hirostar Padel. Todos los derechos reservados.',
                 chart_note_direct: '<strong style="color: var(--accent-primary);">Canal Directo activo:</strong> La mezcla DTC + Consignación retiene entre el 70–100% del PVP en ingresos netos. El margen de consignación siempre supera al precio de distribuidor, compensando el costo de mantener inventario en pista.',
-                chart_note_distrib: '<strong style="color: rgba(255,0,127,0.9);">Canal Distribuidor activo:</strong> El precio configurado es tu precio de venta al distribuidor. Ellos aplicarán su margen (típicamente 40–60%) para llegar al precio final al público. La comisión del club no aplica en este escenario.',
+                chart_note_distrib: '<strong style="color: rgba(255,61,26,0.9);">Canal Distribuidor activo:</strong> El precio configurado es tu precio de venta al distribuidor. Ellos aplicarán su margen (típicamente 40–60%) para llegar al precio final al público. La comisión del club no aplica en este escenario.',
                 roi_sub_positive: 'Equivale a {amt} de retorno neto', roi_sub_negative: 'Equivale a {amt} de pérdida neta',
                 breakeven_sub: '{pct}% del lote ({qty} pares)',
-                no_logistics_tag: ' <span style="color:rgba(255,0,127,0.8); font-size:0.75rem">[Sin Logística]</span>',
+                no_logistics_tag: ' <span style="color:rgba(255,61,26,0.8); font-size:0.75rem">[Sin Logística]</span>',
                 kpi_investment_sub_fcl: '<span style="color:var(--accent-primary)">¡Lote de Contenedor FCL Completo!</span>', kpi_unitcost_sub_fcl: 'Máxima optimización de flete',
                 kpi_investment_sub_lcl: 'Carga LCL parcial', kpi_unitcost_sub_lcl: 'Costo puesto en bodega',
                 reset_confirm: 'Esto borra los ajustes guardados en este navegador y vuelve a los valores originales del simulador. ¿Continuar?',
@@ -1791,10 +1792,10 @@
                 footer_line1: 'Technical and commercial projection - Manufacturing in China for Latam and Europe.',
                 footer_line2: '© 2026 Hirostar Padel. All rights reserved.',
                 chart_note_direct: '<strong style="color: var(--accent-primary);">Direct Channel active:</strong> The DTC + Consignment mix retains between 70–100% of RRP as net revenue. Consignment margin always beats distributor pricing, offsetting the cost of holding inventory on court.',
-                chart_note_distrib: '<strong style="color: rgba(255,0,127,0.9);">Distributor Channel active:</strong> The configured price is your distributor selling price. They will apply their own margin (typically 40–60%) to reach the final retail price. Club commission does not apply in this scenario.',
+                chart_note_distrib: '<strong style="color: rgba(255,61,26,0.9);">Distributor Channel active:</strong> The configured price is your distributor selling price. They will apply their own margin (typically 40–60%) to reach the final retail price. Club commission does not apply in this scenario.',
                 roi_sub_positive: 'Equivalent to {amt} net return', roi_sub_negative: 'Equivalent to {amt} net loss',
                 breakeven_sub: '{pct}% of the batch ({qty} pairs)',
-                no_logistics_tag: ' <span style="color:rgba(255,0,127,0.8); font-size:0.75rem">[No Logistics]</span>',
+                no_logistics_tag: ' <span style="color:rgba(255,61,26,0.8); font-size:0.75rem">[No Logistics]</span>',
                 kpi_investment_sub_fcl: '<span style="color:var(--accent-primary)">Full FCL Container Batch!</span>', kpi_unitcost_sub_fcl: 'Maximum freight optimization',
                 kpi_investment_sub_lcl: 'Partial LCL shipment', kpi_unitcost_sub_lcl: 'Cost delivered to warehouse',
                 reset_confirm: 'This clears the settings saved in this browser and returns to the simulator\'s original values. Continue?',
@@ -1853,10 +1854,10 @@
                 footer_line1: 'Proiezione tecnica e commerciale - Produzione in Cina per Latam ed Europa.',
                 footer_line2: '© 2026 Hirostar Padel. Tutti i diritti riservati.',
                 chart_note_direct: '<strong style="color: var(--accent-primary);">Canale Diretto attivo:</strong> Il mix DTC + Conto Deposito trattiene tra il 70–100% del PVP come ricavo netto. Il margine del conto deposito supera sempre il prezzo distributore, compensando il costo di tenere inventario nei club.',
-                chart_note_distrib: '<strong style="color: rgba(255,0,127,0.9);">Canale Distributore attivo:</strong> Il prezzo configurato è il tuo prezzo di vendita al distributore. Applicheranno il proprio margine (tipicamente 40–60%) per arrivare al prezzo finale al pubblico. La commissione del club non si applica in questo scenario.',
+                chart_note_distrib: '<strong style="color: rgba(255,61,26,0.9);">Canale Distributore attivo:</strong> Il prezzo configurato è il tuo prezzo di vendita al distributore. Applicheranno il proprio margine (tipicamente 40–60%) per arrivare al prezzo finale al pubblico. La commissione del club non si applica in questo scenario.',
                 roi_sub_positive: 'Equivale a {amt} di rendimento netto', roi_sub_negative: 'Equivale a {amt} di perdita netta',
                 breakeven_sub: '{pct}% del lotto ({qty} paia)',
-                no_logistics_tag: ' <span style="color:rgba(255,0,127,0.8); font-size:0.75rem">[Senza Logistica]</span>',
+                no_logistics_tag: ' <span style="color:rgba(255,61,26,0.8); font-size:0.75rem">[Senza Logistica]</span>',
                 kpi_investment_sub_fcl: '<span style="color:var(--accent-primary)">Lotto Container FCL Completo!</span>', kpi_unitcost_sub_fcl: 'Massima ottimizzazione della spedizione',
                 kpi_investment_sub_lcl: 'Carico LCL parziale', kpi_unitcost_sub_lcl: 'Costo consegnato in magazzino',
                 reset_confirm: 'Questo cancella le impostazioni salvate in questo browser e ripristina i valori originali del simulatore. Continuare?',
@@ -2435,13 +2436,13 @@
                         data: [0, 0, 0],
                         backgroundColor: [
                             'rgba(255, 255, 255, 0.08)',
-                            'rgba(79, 172, 254, 0.4)',
-                            'rgba(0, 230, 118, 0.4)'
+                            'rgba(154, 161, 171, 0.4)',
+                            'rgba(76, 175, 125, 0.4)'
                         ],
                         borderColor: [
                             'rgba(255, 255, 255, 0.2)',
-                            '#4facfe',
-                            '#00e676'
+                            '#9aa1ab',
+                            '#4caf7d'
                         ],
                         borderWidth: 2,
                         borderRadius: 8
@@ -2476,7 +2477,7 @@
                         {
                             label: 'Costo por Par ($)',
                             data: [0, 0, 0, 0, 0, 0, 0],
-                            borderColor: '#00f2fe',
+                            borderColor: '#c9a961',
                             borderWidth: 3,
                             fill: false,
                             tension: 0.3
@@ -2484,8 +2485,8 @@
                         {
                             label: 'Punto Seleccionado',
                             data: [null, null, null, null, null, null, null],
-                            backgroundColor: '#ff007f',
-                            borderColor: '#ff007f',
+                            backgroundColor: '#ff3d1a',
+                            borderColor: '#ff3d1a',
                             borderWidth: 2,
                             pointRadius: 8,
                             pointHoverRadius: 10,
@@ -2702,9 +2703,9 @@
                 dtc: 40,
                 opex: 22,
                 mult: 6,
-                color: '#4facfe',
-                banner: 'rgba(79,172,254,0.06)',
-                bannerBorder: 'rgba(79,172,254,0.2)',
+                color: '#9aa1ab',
+                banner: 'rgba(154,161,171,0.06)',
+                bannerBorder: 'rgba(154,161,171,0.2)',
                 tabClass: 'base'
             },
             ideal: {
@@ -2716,9 +2717,9 @@
                 dtc: 65,
                 opex: 18,
                 mult: 8,
-                color: '#00e676',
-                banner: 'rgba(0,230,118,0.06)',
-                bannerBorder: 'rgba(0,230,118,0.2)',
+                color: '#4caf7d',
+                banner: 'rgba(76,175,125,0.06)',
+                bannerBorder: 'rgba(76,175,125,0.2)',
                 tabClass: 'ideal'
             }
         };
@@ -2909,14 +2910,14 @@
             tbody.innerHTML = '';
             tableRows.forEach(r => {
                 const tr = document.createElement('tr');
-                const ebitdaColor = r.ebitda >= 0 ? 'var(--success-color)' : '#ff6b9d';
+                const ebitdaColor = r.ebitda >= 0 ? 'var(--success-color)' : '#ff8a6b';
                 const landedTooltip = `FOB $${r.fobYear.toFixed(2)} + Amort. $${r.amortPerPair.toFixed(2)} + Log. $${r.logCostPerPair.toFixed(2)} = $${r.landedPerPair.toFixed(2)}/par`;
                 tr.innerHTML = `
                     <td><strong>Año ${r.yr}</strong></td>
                     <td>${r.countries}</td>
                     <td>${r.pairs.toLocaleString('en-US')}</td>
                     <td class="calculated-cell">${fmtM(r.grossRev)}</td>
-                    <td style="color:rgba(255,0,127,0.8);">−${fmtM(r.brandFee)}</td>
+                    <td style="color:rgba(255,61,26,0.8);">−${fmtM(r.brandFee)}</td>
                     <td class="calculated-cell scenario-impact">${fmtM(r.netRev)}</td>
                     <td class="calculated-cell" title="${landedTooltip}" style="cursor:help;">−${fmtM(r.cogs)} <span style="font-size:0.7rem;color:var(--text-secondary);">${r.landedPerPair.toFixed(1)}/par</span></td>
                     <td class="calculated-cell">${fmtM(r.grossProfit)}</td>
@@ -2937,12 +2938,12 @@
             const totalEBIT  = tableRows.reduce((a,r) => a + r.ebitda, 0);
             const avgMargin  = totalNet > 0 ? (totalEBIT / totalNet * 100) : 0;
             document.getElementById('val-table-foot').innerHTML = `
-                <tr style="background:rgba(0,242,254,0.04);font-weight:700;">
+                <tr style="background:rgba(201,169,97,0.04);font-weight:700;">
                     <td>TOTAL 5A</td>
                     <td>—</td>
                     <td>${totalPairs.toLocaleString('en-US')}</td>
                     <td class="calculated-cell">${fmtM(totalGross)}</td>
-                    <td style="color:rgba(255,0,127,0.8);">−${fmtM(totalFee)}</td>
+                    <td style="color:rgba(255,61,26,0.8);">−${fmtM(totalFee)}</td>
                     <td class="calculated-cell scenario-impact">${fmtM(totalNet)}</td>
                     <td class="calculated-cell">−${fmtM(totalCogs)}</td>
                     <td class="calculated-cell">${fmtM(totalGross - totalFee - totalCogs)}</td>
@@ -2989,8 +2990,8 @@
                 data: {
                     labels: ['Año 1','Año 2','Año 3','Año 4','Año 5'],
                     datasets: [
-                        { label: 'Ingreso Neto', data: [0,0,0,0,0], backgroundColor: 'rgba(0,242,254,0.3)', borderColor: '#00f2fe', borderWidth: 2, borderRadius: 6 },
-                        { label: 'EBITDA',        data: [0,0,0,0,0], backgroundColor: 'rgba(0,230,118,0.5)', borderColor: '#00e676', borderWidth: 2, borderRadius: 6 }
+                        { label: 'Ingreso Neto', data: [0,0,0,0,0], backgroundColor: 'rgba(201,169,97,0.3)', borderColor: '#c9a961', borderWidth: 2, borderRadius: 6 },
+                        { label: 'EBITDA',        data: [0,0,0,0,0], backgroundColor: 'rgba(76,175,125,0.5)', borderColor: '#4caf7d', borderWidth: 2, borderRadius: 6 }
                     ]
                 },
                 options: {
@@ -3011,13 +3012,13 @@
                     datasets: [{
                         label: 'Flujo Acumulado EBITDA',
                         data: [0,0,0,0,0],
-                        borderColor: '#ff007f',
-                        backgroundColor: 'rgba(255,0,127,0.08)',
+                        borderColor: '#ff3d1a',
+                        backgroundColor: 'rgba(255,61,26,0.08)',
                         fill: true,
                         tension: 0.4,
                         borderWidth: 3,
                         pointRadius: 5,
-                        pointBackgroundColor: '#ff007f'
+                        pointBackgroundColor: '#ff3d1a'
                     }]
                 },
                 options: {
@@ -3037,8 +3038,8 @@
                 data: {
                     labels: ['Modesto','Base','Ideal'],
                     datasets: [
-                        { label: 'EBITDA Año 5', data: compData.ebitdas, backgroundColor: ['rgba(255,193,7,0.6)','rgba(79,172,254,0.6)','rgba(0,230,118,0.6)'], borderColor: ['#ffc107','#4facfe','#00e676'], borderWidth: 2, borderRadius: 8 },
-                        { label: 'Valoración', data: compData.valuations, backgroundColor: ['rgba(255,193,7,0.2)','rgba(79,172,254,0.2)','rgba(0,230,118,0.2)'], borderColor: ['#ffc107','#4facfe','#00e676'], borderWidth: 2, borderRadius: 8, borderDash: [4,4] }
+                        { label: 'EBITDA Año 5', data: compData.ebitdas, backgroundColor: ['rgba(255,193,7,0.6)','rgba(154,161,171,0.6)','rgba(76,175,125,0.6)'], borderColor: ['#ffc107','#9aa1ab','#4caf7d'], borderWidth: 2, borderRadius: 8 },
+                        { label: 'Valoración', data: compData.valuations, backgroundColor: ['rgba(255,193,7,0.2)','rgba(154,161,171,0.2)','rgba(76,175,125,0.2)'], borderColor: ['#ffc107','#9aa1ab','#4caf7d'], borderWidth: 2, borderRadius: 8, borderDash: [4,4] }
                     ]
                 },
                 options: {
